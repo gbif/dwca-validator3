@@ -1,0 +1,271 @@
+/* @override http://localhost:7001/ipt/styles/main.css */
+
+/* BASIC HTML TAGS */
+body {
+	background-color: white;
+	margin-bottom: 40px;
+    text-align: left;
+    font-family: arial, helvetica, verdana, sans-serif;
+    font-size: 12px;
+    line-height: 1.1em;
+    color: #666666;
+
+}
+
+h1 {
+	color: #077A2D;
+	font-size: 20px;
+}
+h2 {
+	margin-top: 30px;
+}
+h3 {
+	margin-top: 20px;
+}
+a {
+	color: #005418;
+}
+hr {
+	margin-top: 15px;
+	margin-bottom: 10px;
+	border:1px solid #AFAFAF;
+}
+ul{
+	margin:0px;
+	padding:0px;
+	list-style:none;
+}
+li{
+	padding:5px 0px 0px 0px;
+}
+dt {
+  font-weight: bold;
+  font-style: normal;
+}
+pre {
+	display:inline;
+}
+
+/* MAIN LAYOUT PIECES */
+div#wrapper {
+	position:relative;
+	margin-left:auto;
+	margin-right:auto;
+	width:950px;
+	background-color: #ffffff;
+	padding:10px;
+	margin-top: 10px;
+	margin-bottom: 30px;
+	padding-bottom:0px;
+	padding-top: 0px;
+}
+
+div#topmenu {
+	position:relative;
+	float: right;
+	bottom: -6px;
+}
+div#topmenu > ul {
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+div#topmenu > ul > li {
+	display:inline;
+	margin:0;
+	float:left;
+	padding: 0px 0 0px 10px;
+}
+div#topmenu > ul > li.current a {
+	font-weight:bold;
+}
+
+div#content {
+	padding: 10px;
+	margin-top: 10px;
+}
+div#content.fixed {
+	position: relative;
+	top: -4em;
+	width: 750px;
+	float:left;
+}
+div#content:after{
+    /*Having something in the content such as a period
+    gives a more consistent results across browsers.*/
+    content: ".";
+    display: block;
+    height: 10px;
+    font-size:0;
+    clear: both;
+    visibility:hidden;
+}
+
+
+#footer {
+	clear:both;
+	min-height:1px;
+	border-top:1px solid #DFDFDF;
+	border-bottom:1px solid #DFDFDF;
+	padding: 10px 0px;
+	background:#fafafa;
+	text-align: center;
+}
+#footer:after{
+	display:block;
+	visibility:hidden;
+	clear:both;
+	font-size:0;
+	content:".";
+}
+#belowfooter{
+	padding: 0px;
+	margin: 5px 0px 0px 0px;
+	float:right;
+}
+
+
+
+
+/* common classes */
+
+.small{
+	font-size: 0.75em;
+	color: #888;
+}
+.clear{
+	clear:both;
+	padding:0;
+	margin:0;
+}
+.warn{
+	color: red;
+}
+.good{
+	color: green;
+}
+
+ul.fielderror{
+	list-style:none;
+	color: #d8424f;
+	padding: 0px;
+	margin: 10px 0px 5px 0px;
+}
+.errorMessage{
+	list-style:none;
+	color: #d8424f;
+	padding: 0px;
+	margin: 0px;
+}
+.actionMessage{
+	list-style:none;
+	color: #6dd03e;
+	padding: 0px;
+	margin: 0px;
+}
+
+/* simple table */
+table.simple th{
+	background-color: #fff;
+	text-align: left;
+	text-decoration: underline;
+	padding-bottom: 10px;
+}
+table.simple tr{
+	background-color: #f8f8f8;
+}
+table.simple tr.linebreak{
+	background-color: #fff;
+	height: 1em;
+}
+
+
+/* horizontal list */
+ul.horizontal {
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+ul.horizontal > li {
+	display:inline;
+	margin:0;
+	padding: 0px 10px 0px 0px;
+}
+
+
+
+
+/*
+	2 column layout used for definitions with first column being the title, second the body for a nested table with more details
+	the actions div inside the title is SUPPOSED to stay at the bottom of the title div - but that needs to be FIXED !!!
+*/
+div.definition {
+	width: 100%;
+	overflow: hidden;
+	margin-bottom: 10px;
+}
+
+div.definition div.title{
+	width: 20%;
+	float: left;
+    background-color: #f1f1f1;
+	padding: 5px 0 5px 5px;
+	margin-bottom: -2000px;
+	padding-bottom: 2000px;
+}
+div.definition div.head{
+	font-weight: bold;
+}
+div.definition div.actions {
+	margin: 10px 0 0 0;
+}
+div.definition div.actions form{
+	margin: 0px;
+}
+div.definition div.body{
+	width: 78%;
+	float: right;
+    font-size: 12px;
+	padding: 5px 0px;
+	margin-bottom: -2000px;
+	padding-bottom: 2000px;
+}
+div.definition div.body > div{
+    padding-bottom: 10px;
+}
+
+// div.definition only ???
+div.details{
+    padding-bottom: 0px;
+}
+div.details table{
+    margin: 0;
+    padding: 0;
+}
+div.details table th,
+div.details td{
+    color: #999;
+    font-size: 10px;
+    text-align: left;
+    background-color: white;
+    padding:0px 10px 0px 0px;
+}
+
+
+
+
+
+table.dwc{
+	text-align: left;
+}
+table.dwc th{
+	font-weight: bold;
+	padding-bottom: 10px;
+}
+table.dwc th.concept{
+	background-color: #eee;
+	text-decoration: underline;
+}
+table.dwc tr.core{
+	border-top: 1px solid #000;
+}

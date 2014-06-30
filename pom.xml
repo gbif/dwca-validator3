@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.gbif</groupId>
+    <artifactId>motherpom</artifactId>
+    <version>9</version>
+  </parent>
+
+  <groupId>org.gbif</groupId>
+  <artifactId>dwca-validator</artifactId>
+  <version>3.0</version>
+  <packaging>war</packaging>
+
+  <name>DarwinCore :: DwC-A Validator</name>
+  <description>A validator for darwin core archives, their meta.xml descriptor and EML documents</description>
+  <url>http://sites.gbif.org/darwincore/dwca-validator</url>
+
+  <properties>
+    <!--
+      Default settings used mainly for development.
+      To build a release please use -P release
+    -->
+    <devMode>true</devMode>
+    <devModeNegated>false</devModeNegated>
+    <analytics.key>UA-18593842-1</analytics.key>
+
+    <reports.dir>/tmp/dwcareports</reports.dir>
+    <reports.www>http://localhost/dwca-reports</reports.www>
+
+    <commons-io.version>2.0.1</commons-io.version>
+    <commons-lang.version>3.1</commons-lang.version>
+    <dwc-api.version>1.0</dwc-api.version>
+    <dwca-reader.version>1.11</dwca-reader.version>
+    <freemarker.version>2.3.19</freemarker.version>
+    <gbif-metadata-profile.version>1.0.2</gbif-metadata-profile.version>
+    <gbif-common.version>0.7</gbif-common.version>
+    <gbif-httputils.version>0.2</gbif-httputils.version>
+    <guava.version>12.0.1</guava.version>
+    <guice.version>3.0</guice.version>
+    <httpclient.version>4.1.1</httpclient.version>
+    <httpcore.version>4.1</httpcore.version>
+    <jackson.version>1.7.5</jackson.version>
+    <junit.version>4.10</junit.version>
+    <logback.version>1.0.0</logback.version>
+    <mockito.version>1.9.0</mockito.version>
+    <servlet-api.version>2.5</servlet-api.version>
+    <slf4j.version>1.6.5</slf4j.version>
+    <struts2.version>2.2.3.1</struts2.version>
+    <trove4j.version>3.0.2</trove4j.version>
+  </properties>
+
+  <developers>
+    <developer>
+      <name>Markus Döring</name>
+      <email>mdoering@gbif.org</email>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:svn:http://darwincore.googlecode.com/svn/tags/dwca-validator-3.0</connection>
+    <developerConnection>scm:svn:https://darwincore.googlecode.com/svn/tags/dwca-validator-3.0</developerConnection>
+    <url>http://code.google.com/p/darwincore/source/browse/tags/dwca-validator-3.0</url>
+  </scm>
+
+  <issueManagement>
+    <system>Google Code</system>
+    <url>http://code.google.com/p/darwincore/issues/list</url>
+  </issueManagement>
+
+  <distributionManagement>
+    <site>
+      <id>gbif-site</id>
+      <name>Site for the DWCA Validator project</name>
+      <url>scp://tools.gbif.org:/var/www/html/sites/darwincore/dwca-validator</url>
+    </site>
+  </distributionManagement>
+
+  <build>
+    <defaultGoal>jetty:run</defaultGoal>
+    <plugins>
+      <!-- To simplify development, allows developers to use "mvn jetty:run" -->
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <configuration>
+          <stopKey>stop</stopKey>
+          <stopPort>9966</stopPort>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <additionalBuildcommands>
+            <buildcommand>com.atlassw.tools.eclipse.checkstyle.CheckstyleBuilder</buildcommand>
+          </additionalBuildcommands>
+          <additionalConfig>
+            <file>
+              <name>.checkstyle</name>
+              <url>http://rs.gbif.org/conventions/java-style-config.xml</url>
+            </file>
+          </additionalConfig>
+        </configuration>
+      </plugin>
+    </plugins>
+
+    <resources>
+      <!-- The default resources will all be filtered, i.e. maven variables ${xyz} will be replaced by maven -->
+      <resource>
+        <directory>src/main/resources</directory>
+        <!-- exclude the following files, as they use the same ${} syntax for non maven variables -->
+        <excludes>
+          <exclude>ApplicationResources*.properties</exclude>
+          <exclude>struts*.xml</exclude>
+        </excludes>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <!-- finally include the excluded files again without filtering -->
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>ApplicationResources*.properties</include>
+          <include>struts*.xml</include>
+        </includes>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+    <testResources>
+      <!-- with filtering copying big test files becomes VERY slow -->
+      <testResource>
+        <directory>src/test/resources</directory>
+        <excludes>
+          <exclude>*.properties</exclude>
+        </excludes>
+        <filtering>false</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <includes>
+          <include>*.properties</include>
+        </includes>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>gbif-all</id>
+      <url>http://repository.gbif.org/content/groups/gbif</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- GBIF libs -->
+    <dependency>
+      <groupId>org.gbif</groupId>
+      <artifactId>dwc-api</artifactId>
+      <version>${dwc-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gbif</groupId>
+      <artifactId>dwca-reader</artifactId>
+      <version>${dwca-reader.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gbif</groupId>
+      <artifactId>gbif-metadata-profile</artifactId>
+      <version>${gbif-metadata-profile.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.gbif</groupId>
+      <artifactId>gbif-common</artifactId>
+      <version>${gbif-common.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gbif</groupId>
+      <artifactId>gbif-httputils</artifactId>
+      <version>${gbif-httputils.version}</version>
+    </dependency>
+    <!-- Struts2 -->
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-core</artifactId>
+      <version>${struts2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>runtime</scope>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-logging</artifactId>
+          <groupId>commons-logging</groupId>
+        </exclusion>
+      </exclusions>
+      <version>2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang.version}</version>
+    </dependency>
+    <!--  Json -->
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-struts2</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-servlet</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>${servlet-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <version>${httpcore.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${httpclient.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-logging</artifactId>
+          <groupId>commons-logging</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>net.sf.trove4j</groupId>
+        <artifactId>trove4j</artifactId>
+        <version>${trove4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>${freemarker.version}</version>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <!-- Production settings used for the GBIF installation -->
+    <profile>
+      <id>gbif</id>
+      <properties>
+        <devMode>false</devMode>
+        <devModeNegated>true</devModeNegated>
+        <reports.dir>/var/www/html/tools/dwca-reports</reports.dir>
+        <reports.www>http://tools.gbif.org/dwca-reports</reports.www>
+      </properties>
+    </profile>
+  </profiles>
+
+</project>

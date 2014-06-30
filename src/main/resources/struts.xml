@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<!--
+		default settings all other packages inherit from
+		security interceptors, default action class & result type, global results are defined here
+	-->
+	<package name="ipt-default" extends="struts-default" namespace="/">
+		<result-types>
+			<result-type name="freemarker" class="org.apache.struts2.views.freemarker.FreemarkerResult" default="true"/>
+		</result-types>
+
+		<interceptors>
+			<!-- see http://struts.apache.org/2.1.8/docs/interceptors.html -->
+			<interceptor-stack name="default">
+				<interceptor-ref name="i18nStack"/>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="default"/>
+
+		<default-action-ref name="validate"/>
+		<default-class-ref class="org.gbif.dwca.action.BaseAction"/>
+
+		<global-results>
+			<result name="404">
+				<param name="location">/WEB-INF/pages/404.ftl</param>
+			</result>
+			<result name="error">
+				<param name="location">/WEB-INF/pages/error.ftl</param>
+			</result>
+		</global-results>
+
+		<global-exception-mappings>
+			<exception-mapping result="error" exception="java.lang.RuntimeException"/>
+		</global-exception-mappings>
+
+
+		<action name="about" class="org.gbif.dwca.action.AboutAction">
+			<result>/WEB-INF/pages/about.ftl</result>
+		</action>
+
+    <action name="api" class="org.gbif.dwca.action.AboutAction">
+      <result>/WEB-INF/pages/api.ftl</result>
+    </action>
+
+    <action name="validate" class="org.gbif.dwca.action.ValidateAction">
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">1048576000</param>
+			</interceptor-ref>
+			<interceptor-ref name="default"/>
+			<result name="input">/WEB-INF/pages/home.ftl</result>
+			<result>/WEB-INF/pages/validate.ftl</result>
+		</action>
+
+    <action name="validatews" class="org.gbif.dwca.action.ValidateAction">
+      <interceptor-ref name="default"/>
+      <result name="success">
+        <param name="contentType">text/plain</param>
+        <param name="location">/WEB-INF/pages/validate_ws.ftl</param>
+      </result>
+    </action>
+
+    <action name="eml" class="org.gbif.dwca.action.ValidateAction" method="eml">
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">104857600</param>
+			</interceptor-ref>
+			<interceptor-ref name="default"/>
+			<result name="input">/WEB-INF/pages/eml.ftl</result>
+			<result>/WEB-INF/pages/validate_eml.ftl</result>
+		</action>
+
+		<!-- EXTENSION & VOCAB MANAGEMENT -->
+		<action name="extensions" class="org.gbif.dwca.action.ExtensionsAction" method="list">
+			<result>/WEB-INF/pages/extensions.ftl</result>
+		</action>
+		<action name="extension" class="org.gbif.dwca.action.ExtensionsAction">
+			<result>/WEB-INF/pages/extension.ftl</result>
+		</action>
+		<action name="extensionTxt" class="org.gbif.dwca.action.ExtensionsAction">
+			<result>
+				<param name="location">/WEB-INF/pages/extension_txt.ftl</param>
+				<param name="contentType">text/plain</param>
+			</result>
+		</action>
+		<action name="vocabulary" class="org.gbif.dwca.action.VocabulariesAction">
+			<result>/WEB-INF/pages/vocabulary.ftl</result>
+		</action>
+		<action name="vocabularyTxt" class="org.gbif.dwca.action.VocabulariesAction">
+			<result>
+				<param name="location">/WEB-INF/pages/vocabulary_txt.ftl</param>
+				<param name="contentType">text/plain</param>
+			</result>
+		</action>
+		<action name="update" class="org.gbif.dwca.action.ExtensionsAction" method="update">
+			<result>/WEB-INF/pages/update.ftl</result>
+		</action>
+	</package>
+
+</struts>

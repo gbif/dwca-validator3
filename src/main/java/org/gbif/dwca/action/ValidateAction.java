@@ -17,8 +17,8 @@
 package org.gbif.dwca.action;
 
 import org.gbif.dwc.record.Record;
-import org.gbif.dwc.terms.ConceptTerm;
 import org.gbif.dwc.terms.DwcTerm;
+import org.gbif.dwc.terms.Term;
 import org.gbif.dwc.text.Archive;
 import org.gbif.dwc.text.ArchiveFactory;
 import org.gbif.dwc.text.ArchiveField;
@@ -715,7 +715,7 @@ public class ValidateAction extends BaseAction {
     return emptyLines;
   }
 
-  private List<String> interpretRecord(List<ConceptTerm> concepts, Record rec, boolean isCore, int rowSize) {
+  private List<String> interpretRecord(List<Term> concepts, Record rec, boolean isCore, int rowSize) {
     List<String> row = new ArrayList<String>();
     if (isCore) {
       row.add(rec.id());
@@ -723,7 +723,7 @@ public class ValidateAction extends BaseAction {
       String name = StringUtils.substringAfterLast(rec.rowType(), "/");
       row.add(name);
     }
-    for (ConceptTerm t : concepts) {
+    for (Term t : concepts) {
       row.add(rec.value(t));
     }
     // make sure all rows have the same width
@@ -799,17 +799,17 @@ public class ValidateAction extends BaseAction {
   private void setRecords() {
     try {
       // prepare ordered headers
-      Map<String, List<ConceptTerm>> recordsHeaderFull = new HashMap<String, List<ConceptTerm>>();
-      List<ConceptTerm> terms = new ArrayList<ConceptTerm>();
+      Map<String, List<Term>> recordsHeaderFull = new HashMap<String, List<Term>>();
+      List<Term> terms = new ArrayList<Term>();
       recordsHeaderFull.put(archive.getCore().getRowType(), terms);
-      for (ConceptTerm t : archive.getCore().getFields().keySet()) {
+      for (Term t : archive.getCore().getFields().keySet()) {
         terms.add(t);
       }
       int maxRecordWidth = terms.size();
       for (ArchiveFile af : archive.getExtensions()) {
-        terms = new ArrayList<ConceptTerm>();
+        terms = new ArrayList<Term>();
         recordsHeaderFull.put(af.getRowType(), terms);
-        for (ConceptTerm t : af.getFields().keySet()) {
+        for (Term t : af.getFields().keySet()) {
           terms.add(t);
         }
         if (terms.size() > maxRecordWidth) {
@@ -838,7 +838,7 @@ public class ValidateAction extends BaseAction {
       for (String rt : recordsHeaderFull.keySet()) {
         String name = StringUtils.substringAfterLast(rt, "/");
         List<String> concepts = new ArrayList<String>();
-        for (ConceptTerm ct : recordsHeaderFull.get(rt)) {
+        for (Term ct : recordsHeaderFull.get(rt)) {
           concepts.add(ct.simpleName());
         }
         while (concepts.size() < maxRecordWidth) {

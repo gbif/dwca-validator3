@@ -5,17 +5,24 @@
   <parent>
     <groupId>org.gbif</groupId>
     <artifactId>motherpom</artifactId>
-    <version>9</version>
+    <version>16</version>
   </parent>
 
   <groupId>org.gbif</groupId>
   <artifactId>dwca-validator</artifactId>
-  <version>3.0</version>
+  <version>3.1-SNAPSHOT</version>
   <packaging>war</packaging>
 
-  <name>DarwinCore :: DwC-A Validator</name>
+  <name>DwC-A Validator</name>
   <description>A validator for darwin core archives, their meta.xml descriptor and EML documents</description>
-  <url>http://sites.gbif.org/darwincore/dwca-validator</url>
+  <url>https://github.com/gbif/dwca-validator3</url>
+
+  <scm>
+    <connection>scm:git:git@github.com:gbif/dwca-validator3.git</connection>
+    <url>https://github.com/gbif/dwca-validator3</url>
+    <developerConnection>scm:git:git@github.com:gbif/dwca-validator3.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
   <properties>
     <!--
@@ -29,54 +36,29 @@
     <reports.dir>/tmp/dwcareports</reports.dir>
     <reports.www>http://localhost/dwca-reports</reports.www>
 
-    <commons-io.version>2.0.1</commons-io.version>
-    <commons-lang.version>3.1</commons-lang.version>
-    <dwc-api.version>1.0</dwc-api.version>
-    <dwca-reader.version>1.11</dwca-reader.version>
-    <freemarker.version>2.3.19</freemarker.version>
+    <commons-io.version>2.4</commons-io.version>
+    <commons-lang.version>3.3.1</commons-lang.version>
+    <commons-digester.version>2.1</commons-digester.version>
+    <dwc-api.version>1.7</dwc-api.version>
+    <dwca-reader.version>1.17</dwca-reader.version>
+    <freemarker.version>2.3.20</freemarker.version>
     <gbif-metadata-profile.version>1.0.2</gbif-metadata-profile.version>
-    <gbif-common.version>0.7</gbif-common.version>
-    <gbif-httputils.version>0.2</gbif-httputils.version>
-    <guava.version>12.0.1</guava.version>
+    <gbif-common.version>0.16</gbif-common.version>
+    <gbif-httputils.version>0.5</gbif-httputils.version>
+    <guava.version>17.0</guava.version>
     <guice.version>3.0</guice.version>
-    <httpclient.version>4.1.1</httpclient.version>
-    <httpcore.version>4.1</httpcore.version>
-    <jackson.version>1.7.5</jackson.version>
+    <httpclient.version>4.2.5</httpclient.version>
+    <httpcore.version>4.2.5</httpcore.version>
+    <jackson.version>1.7.7</jackson.version>
     <junit.version>4.10</junit.version>
-    <logback.version>1.0.0</logback.version>
+    <logback.version>1.0.2</logback.version>
     <mockito.version>1.9.0</mockito.version>
     <servlet-api.version>2.5</servlet-api.version>
-    <slf4j.version>1.6.5</slf4j.version>
-    <struts2.version>2.2.3.1</struts2.version>
+    <slf4j.version>1.7.7</slf4j.version>
+    <struts2.version>2.3.16.3</struts2.version>
     <trove4j.version>3.0.2</trove4j.version>
   </properties>
 
-  <developers>
-    <developer>
-      <name>Markus Döring</name>
-      <email>mdoering@gbif.org</email>
-      <timezone>+1</timezone>
-    </developer>
-  </developers>
-
-  <scm>
-    <connection>scm:svn:http://darwincore.googlecode.com/svn/tags/dwca-validator-3.0</connection>
-    <developerConnection>scm:svn:https://darwincore.googlecode.com/svn/tags/dwca-validator-3.0</developerConnection>
-    <url>http://code.google.com/p/darwincore/source/browse/tags/dwca-validator-3.0</url>
-  </scm>
-
-  <issueManagement>
-    <system>Google Code</system>
-    <url>http://code.google.com/p/darwincore/issues/list</url>
-  </issueManagement>
-
-  <distributionManagement>
-    <site>
-      <id>gbif-site</id>
-      <name>Site for the DWCA Validator project</name>
-      <url>scp://tools.gbif.org:/var/www/html/sites/darwincore/dwca-validator</url>
-    </site>
-  </distributionManagement>
 
   <build>
     <defaultGoal>jetty:run</defaultGoal>
@@ -206,7 +188,7 @@
           <groupId>commons-logging</groupId>
         </exclusion>
       </exclusions>
-      <version>2.1</version>
+      <version>${commons-digester.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>

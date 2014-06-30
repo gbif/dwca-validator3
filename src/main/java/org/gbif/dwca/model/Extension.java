@@ -1,6 +1,6 @@
 package org.gbif.dwca.model;
 
-import org.gbif.dwc.terms.ConceptTerm;
+import org.gbif.dwc.terms.Term;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -92,7 +92,7 @@ public class Extension implements Comparable<Extension>{
     return properties;
   }
 
-  public ExtensionProperty getProperty(ConceptTerm term) {
+  public ExtensionProperty getProperty(Term term) {
     return getProperty(term.qualifiedName());
   }
 
@@ -132,7 +132,7 @@ public class Extension implements Comparable<Extension>{
     return Objects.hashCode(rowType, url);
   }
 
-  public boolean hasProperty(ConceptTerm term) {
+  public boolean hasProperty(Term term) {
     return getProperty(term) != null;
   }
 

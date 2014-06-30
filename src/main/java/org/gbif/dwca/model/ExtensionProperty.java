@@ -7,17 +7,17 @@
  */
 package org.gbif.dwca.model;
 
-import org.gbif.dwc.terms.ConceptTerm;
+import org.gbif.dwc.terms.Term;
 import org.gbif.dwc.terms.TermFactory;
 
-import static com.google.common.base.Objects.equal;
-
 import com.google.common.base.Objects;
+
+import static com.google.common.base.Objects.equal;
 
 /**
  * TODO: Documentation.
  */
-public class ExtensionProperty implements Comparable<ExtensionProperty>, ConceptTerm {
+public class ExtensionProperty implements Comparable<ExtensionProperty>, Term {
   private Extension extension;
   private String name;
   private String namespace;
@@ -38,7 +38,7 @@ public class ExtensionProperty implements Comparable<ExtensionProperty>, Concept
   /**
    * Construct a new property with a single qualified name. Parses out the name and sets the namespace to end with a
    * slash or #
-   * 
+   *
    * @param qualName
    */
   public ExtensionProperty(String qualName) {
@@ -48,7 +48,7 @@ public class ExtensionProperty implements Comparable<ExtensionProperty>, Concept
 
   /**
    * Compare by group and qualified name as default sorting order
-   * 
+   *
    * @see java.lang.Comparable#compareTo(Object)
    */
   public int compareTo(ExtensionProperty prop) {
@@ -63,7 +63,7 @@ public class ExtensionProperty implements Comparable<ExtensionProperty>, Concept
 
   /**
    * Just compare the unique qualified names to see if extension properties are equal
-   * 
+   *
    * @see java.lang.Object#equals(Object)
    */
   @Override
@@ -81,7 +81,7 @@ public class ExtensionProperty implements Comparable<ExtensionProperty>, Concept
   /**
    * The length of the database column to be generated when the extension property is installed. Also used to trim
    * incoming data before SQL insert is generated. For LOB columns use -1 or any negative value
-   * 
+   *
    * @return
    */
   public int getColumnLength() {

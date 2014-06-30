@@ -6,34 +6,21 @@ import org.gbif.dwca.model.factory.VocabularyFactory;
 import org.gbif.dwca.utils.InputStreamUtils;
 import org.gbif.utils.HttpUtil;
 
+import javax.servlet.ServletContext;
+import javax.xml.parsers.SAXParserFactory;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
-
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.cache.WebappTemplateLoader;
 import freemarker.template.Configuration;
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletContext;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A guice module containing wiring used for both test and production.
@@ -68,7 +55,8 @@ public class GuiceModule extends AbstractModule {
   @Singleton
   @Inject
   public DefaultHttpClient provideHttpClient() {
-    return HttpUtil.newMultithreadedClient();
+    // one minute timeout
+    return HttpUtil.newMultithreadedClient(60000, 20, 5);
   }
 
   @Provides

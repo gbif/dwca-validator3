@@ -17,11 +17,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.http.HttpEntity;
@@ -39,15 +37,6 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 public class VocabulariesManagerImpl implements VocabulariesManager {
-  public class UpdateResult {
-    // key=uri
-    public Set<String> updated = Sets.newHashSet();
-    // key=uri
-    public Set<String> unchanged = Sets.newHashSet();
-    // key=uri, value=error text
-    public Map<String, String> errors = Maps.newHashMap();
-  }
-
   protected Logger log = LoggerFactory.getLogger(this.getClass());
   protected AppConfig cfg;
 
@@ -55,9 +44,6 @@ public class VocabulariesManagerImpl implements VocabulariesManager {
   private Map<String, String> uri2url = Maps.newHashMap();
   private VocabularyFactory vocabFactory;
   private HttpClient httpClient;
-  private final String[] defaultVocabs = new String[]{
-      "http://rs.gbif.org/vocabulary/gbif/resource_type.xml", "http://rs.gbif.org/vocabulary/iso/639-1.xml",
-      "http://rs.gbif.org/vocabulary/iso/3166-1_alpha2.xml"};
 
   /**
    *
@@ -77,10 +63,10 @@ public class VocabulariesManagerImpl implements VocabulariesManager {
     }
     uri2url.put(v.getUri().toLowerCase(), url);
     // keep vocab in local lookup
-    if (vocabularies.containsKey(url.toString())) {
+    if (vocabularies.containsKey(url)) {
       log.warn("Vocabulary URI {} exists already - overwriting with new vocabulary from {}",v.getUri(), url);
     }
-    vocabularies.put(url.toString(), v);
+    vocabularies.put(url, v);
     return true;
   }
 
@@ -133,7 +119,7 @@ public class VocabulariesManagerImpl implements VocabulariesManager {
   private void install(String url) {
     if (url != null) {
       // parse vocabulary file
-      HttpGet get = new HttpGet(url.toString());
+      HttpGet get = new HttpGet(url);
       HttpEntity entity = null;
       try {
         HttpResponse response = httpClient.execute(get);
@@ -141,7 +127,7 @@ public class VocabulariesManagerImpl implements VocabulariesManager {
         if (entity != null) {
           InputStream is = entity.getContent();
           Vocabulary v = vocabFactory.build(is);
-          entity.consumeContent();
+          EntityUtils.consume(entity);
           v.setLastUpdate(new Date());
           log.info("Successfully loaded Vocabulary: " + v.getTitle());
           addToCache(v, url);

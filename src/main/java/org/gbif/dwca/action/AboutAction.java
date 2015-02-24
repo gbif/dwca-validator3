@@ -18,44 +18,25 @@ package org.gbif.dwca.action;
 
 import org.gbif.dwca.service.ValidationService;
 
-import com.google.inject.Inject;
-
 import java.util.Date;
+
+import com.google.inject.Inject;
 
 /**
  * @author markus
  * 
  */
 public class AboutAction extends BaseAction {
-
-  private String schemaMetaUrl;
-  private String registryUrl;
-  private String registryDevUrl;
   @Inject
   private ValidationService validation;
 
   @Override
   public String execute() throws Exception {
-    schemaMetaUrl = cfg.getMetaSchema();
-    registryUrl = cfg.getRegistryUrl();
-    registryDevUrl = cfg.getRegistryDevUrl();
     return super.execute();
   }
 
   public Date getLastSchemaUpdate() {
     return validation.getLastUpdate();
-  }
-
-  public String getRegistryDevUrl() {
-    return registryDevUrl;
-  }
-
-  public String getRegistryUrl() {
-    return registryUrl;
-  }
-
-  public String getSchemaMetaUrl() {
-    return schemaMetaUrl;
   }
 
 }

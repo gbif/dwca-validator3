@@ -19,7 +19,7 @@
 			<dd>The full public url to the archive to be validated</dd>
 
 			<dt>ifModifiedSince</dt>
-			<dd>An optional ISO date (yyy-mm-dd) to enable conditional get requests, validating archives only if they have been modified since the given date. This feature requires the archive url to honor the if-modified-since http header. Apache webservers for example do this out of the box for static files, but if you use dynamic scripts to generate the archive on the fly this might not be recognised.</dd>
+			<dd>An optional ISO date (yyyy-mm-dd) to enable conditional get requests, validating archives only if they have been modified since the given date. This feature requires the archive url to honor the if-modified-since http header. Apache webservers for example do this out of the box for static files, but if you use dynamic scripts to generate the archive on the fly this might not be recognised.</dd>
 		</dl>
 
 			<dt>reportId</dt>
@@ -30,11 +30,11 @@
 		<h2>JSON Response</h2>
 		<p>
 		Example of a successful validation response with request =
-			http://tools.gbif.org/dwca-validator/validatews.do?archiveUrl=http://ecat-dev.gbif.org/repository/vernaculars/vernacular_registry_dwca_3.zip
+			http://tools.gbif.org/dwca-validator/validatews.do?archiveUrl=http://rs.gbif.org/datasets/vernaculars/vernacular_registry_dwca_3.zip
 		</p>
 <pre>
 {
-  "archiveUrl": "http://ecat-dev.gbif.org/repository/vernaculars/vernacular_registry_dwca_3.zip",
+  "archiveUrl": "http://rs.gbif.org/datasets/vernaculars/vernacular_registry_dwca_3.zip",
   "httpStatusCode": 200,
   "online": true,
   "valid": true,
@@ -51,11 +51,11 @@
 
 			<p>
 			Example of a not modified validation response with request =
-				http://tools.gbif.org/dwca-validator/validatews.do?archiveUrl=http://ecat-dev.gbif.org/repository/vernaculars/vernacular_registry_dwca_3.zip&ifModifiedSince=2011-06-27
+				http://tools.gbif.org/dwca-validator/validatews.do?archiveUrl=http://rs.gbif.org/datasets/vernaculars/vernacular_registry_dwca_3.zip&ifModifiedSince=2011-06-27
 			</p>
 <pre>
 {
-  "archiveUrl": "http://ecat-dev.gbif.org/repository/vernaculars/vernacular_registry_dwca_3.zip",
+  "archiveUrl": "http://rs.gbif.org/datasets/vernaculars/vernacular_registry_dwca_3.zip",
   "httpStatusCode": 304,
   "online": true
 }

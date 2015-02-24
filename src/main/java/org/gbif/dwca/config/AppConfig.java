@@ -1,10 +1,8 @@
 package org.gbif.dwca.config;
 
-import org.gbif.dwca.service.InvalidConfigException;
-import org.gbif.dwca.utils.InputStreamUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Properties;
 
 import com.google.inject.Singleton;
@@ -37,26 +35,37 @@ public class AppConfig {
     return getProperty("schema.meta");
   }
 
+  public String getEmlSchema() {
+    return getProperty("schema.eml");
+  }
+
+  public String getGbifSchema() {
+    return getProperty("schema.gbif");
+  }
+
   public String getProperty(String key) {
     return properties.getProperty(key);
   }
 
-  public String getRegistryDevUrl() {
-    return getProperty("registrydev.url");
+  public URI getGbifResourceSite() {
+    return URI.create("http://rs.gbif.org");
   }
 
-  public String getRegistryUrl() {
-    return getProperty("registry.url");
+  public URI getProdExtensions() {
+    return getGbifResourceSite().resolve("/extensions.json");
+  }
+
+  public URI getDevExtensions() {
+    return getGbifResourceSite().resolve("/sandbox/extensions.json");
   }
 
   public String getVersion() {
     return properties.getProperty("version");
   }
 
-  protected void loadConfig() throws InvalidConfigException {
-    InputStreamUtils streamUtils = new InputStreamUtils();
-    InputStream configStream = streamUtils.classpathStream(CLASSPATH_PROPFILE);
+  protected void loadConfig() {
     try {
+      InputStream configStream = AppConfig.class.getClassLoader().getResourceAsStream(CLASSPATH_PROPFILE);
       this.properties = new Properties();
       if (configStream != null) {
         properties.load(configStream);

@@ -4,7 +4,6 @@
 package org.gbif.dwca.action;
 
 import org.gbif.dwca.config.AppConfig;
-import org.gbif.metadata.eml.ValidatorFactory;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
 public class BaseAction extends ActionSupport implements Action, SessionAware, Preparable, ServletRequestAware {
   private static final long serialVersionUID = -2330991910834399442L;
   public static final String NOT_FOUND = "404";
-  public static final String HOME = "home";
   protected boolean notFound = false;
 
   /**
@@ -83,12 +81,16 @@ public class BaseAction extends ActionSupport implements Action, SessionAware, P
     return id;
   }
 
+  public void setId(String id) {
+    this.id = id;
+  }
+
   public String getSchemaEmlGbifUrl() {
-    return ValidatorFactory.EML_GBIF_PROFILE_SCHEMA_URL;
+    return cfg.getGbifSchema();
   }
 
   public String getSchemaEmlUrl() {
-    return ValidatorFactory.EML_SCHEMA_URL;
+    return cfg.getEmlSchema();
   }
 
   protected boolean isHttpPost() {

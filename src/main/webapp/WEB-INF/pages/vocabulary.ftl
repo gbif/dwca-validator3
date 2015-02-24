@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.gbif.dwca.action.VocabulariesAction" -->
 <#include "/WEB-INF/pages/inc/header.ftl">
 	<title>${vocabulary.title}</title>
 <#assign currentMenu = "extensions" />

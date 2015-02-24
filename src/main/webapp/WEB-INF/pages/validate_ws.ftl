@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.gbif.dwca.action.ValidateAction" -->
 <#setting url_escaping_charset="UTF-8">
 {
 "archiveUrl":"${archiveUrl!"missing"}",

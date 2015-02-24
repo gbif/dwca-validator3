@@ -16,6 +16,7 @@
 
 package org.gbif.dwca.action;
 
+import org.gbif.api.model.registry.Dataset;
 import org.gbif.dwc.record.Record;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.dwc.terms.Term;
@@ -31,10 +32,7 @@ import org.gbif.dwca.service.ValidationService;
 import org.gbif.dwca.utils.FreemarkerUtils;
 import org.gbif.dwca.utils.UrlUtils;
 import org.gbif.file.CSVReader;
-import org.gbif.metadata.BasicMetadata;
-import org.gbif.metadata.DateUtils;
-import org.gbif.metadata.eml.Eml;
-import org.gbif.metadata.eml.EmlFactory;
+import org.gbif.registry.metadata.parse.DatasetParser;
 import org.gbif.utils.HttpUtil;
 import org.gbif.utils.collection.CompactHashSet;
 import org.gbif.utils.file.ClosableIterator;
@@ -52,6 +50,7 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,6 +76,7 @@ import gnu.trove.map.hash.TObjectByteHashMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.struts2.views.freemarker.StrutsBeanWrapper;
@@ -151,12 +151,9 @@ public class ValidateAction extends BaseAction {
   private Set<Integer> emptyLines;
   private TObjectByteMap<String> coreIds = new TObjectByteHashMap<String> ();
   // metadata
-  private BasicMetadata metadata;
+  private Dataset metadata;
   private Exception metadataException;
   private ArrayList<StackTraceElement> metadataStackTrace = new ArrayList<StackTraceElement>();
-  // for eml validation only
-  private Eml eml;
-  private Exception emlException;
   private boolean emlSchemaValidated = false;
   private boolean gbifSchemaValidated = false;
   private boolean tooManyCoreIds = false;
@@ -262,7 +259,7 @@ public class ValidateAction extends BaseAction {
     ArchiveLocation archLoc=null;
     try {
       if (!StringUtils.isBlank(ifModifiedSince)){
-        ifModifiedSinceDate = DateUtils.parseIso(ifModifiedSince);
+        ifModifiedSinceDate = DateFormatUtils.ISO_DATE_FORMAT.parse(ifModifiedSince);
         if (ifModifiedSinceDate==null){
           log.debug("Use conditional get for download if modified since: " + ifModifiedSince);
           return INPUT;
@@ -278,6 +275,8 @@ public class ValidateAction extends BaseAction {
         validateAgainstSchema(archLoc.metaFile);
         validateArchive(archLoc.dwcaFolder);
       }
+    } catch (ParseException e) {
+      setOffline("Invalid ISO date "+e.getMessage());
     } catch (MalformedURLException e) {
       setOffline("MalformedURLException "+e.getMessage());
     } catch (SocketException e) {
@@ -396,14 +395,6 @@ public class ValidateAction extends BaseAction {
     return dwcaStackTrace;
   }
 
-  public Eml getEml() {
-    return eml;
-  }
-
-  public Exception getEmlException() {
-    return emlException;
-  }
-
   private InputStream getEmlInputStream() throws FileNotFoundException {
     InputStream src = null;
     if (file != null) {
@@ -453,7 +444,7 @@ public class ValidateAction extends BaseAction {
     return meta;
   }
 
-  public BasicMetadata getMetadata() {
+  public Dataset getMetadata() {
     return metadata;
   }
 
@@ -977,10 +968,10 @@ public class ValidateAction extends BaseAction {
 
     // try to parse EML doc with dwca reader
     try {
-      eml = EmlFactory.build(getEmlInputStream());
+      metadata = DatasetParser.build(getEmlInputStream());
     } catch (Exception e) {
-      log.info("Cant parse eml document with eml factory");
-      emlException = e;
+      log.info("Cant parse eml document with dataset parser");
+      metadataException = e;
     }
 
   }
@@ -1039,5 +1030,9 @@ public class ValidateAction extends BaseAction {
 
   public TObjectLongHashMap<String> getNullValues() {
     return nullValues;
+  }
+
+  public void setValidate(Object x) {
+    //ignore
   }
 }

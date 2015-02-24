@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +29,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,25 +76,25 @@ public class ExtensionManagerImpl implements ExtensionManager {
 
     // rely on the fact that AppConfig is already setup
     try {
-      String url = cfg.getRegistryUrl();
+      URL url;
       if (development) {
-        url = cfg.getRegistryDevUrl();
+        url = cfg.getDevExtensions().toURL();
+      } else {
+        url = cfg.getProdExtensions().toURL();
       }
-      url += "/registry/extensions.json";
 
       // get json
-      log.info("Retrieving extensions from registry api: " + url);
-      Map<String, Object> registryResponse = null;
-      registryResponse = mapper.readValue(new URL(url), Map.class);
+      log.info("Retrieving extensions from " + url);
+      Map<String, Object> registryResponse = mapper.readValue(url, Map.class);
       List<Map<String, Object>> jsonExtensions = (List<Map<String, Object>>) registryResponse.get("extensions");
       for (Map<String, Object> ext : jsonExtensions) {
-          try {
-            extensions.add(new URL((String)ext.get("url")));
-          } catch (Exception e) {
-            log.error("Exception when listing extensions", e);
-          }
+        try {
+          extensions.add(new URL((String)ext.get("url")));
+        } catch (Exception e) {
+          log.error("Exception when listing extensions", e);
         }
-    log.info("Discovered {} extensions in the {} registry", extensions.size(), development ? "dev" : "production");
+      }
+    log.info("Discovered {} extensions in {}", extensions.size(), development ? "sandbox" : "production");
     } catch (MalformedURLException e) {
       log.error("MalformedURLException when discovering extensions", e);
     } catch (IOException e) {
@@ -200,9 +200,6 @@ public class ExtensionManagerImpl implements ExtensionManager {
     List<URL> extensions = discoverExtensions(true);
     for (URL url : extensions) {
       log.info("Loading dev #{} extension {} ...", counter+1, url);
-      if (url.getFile().endsWith("GermplasmAccession.xml")){
-        log.info("GermplasmAccession.xml");
-      }
       install(url, true);
       counter++;
     }

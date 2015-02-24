@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.gbif.dwca.action.ExtensionsAction" -->
 <#include "/WEB-INF/pages/inc/header.ftl">
 	<title>Registered Extensions</title>
 <#assign currentMenu = "extensions" />

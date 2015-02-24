@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.gbif.dwca.action.ValidateAction" -->
 <h1>DwC Archive Validation Result</h1>
 
 <p><strong>Archive Source</strong>: <#if archiveUrl?has_content>${archiveUrl}<#else><#if fileFileName?has_content>uploaded file ${fileFileName}<#else>meta.xml form</#if></#if></p>
@@ -61,34 +62,7 @@ ${el}
 		<#if metadata??>
 		<p class="good">Dataset metadata description read from file <em>${archive.metadataLocation}</em> .</p>
 		<div class="details">
-			<table>
-				<tr>
-					<th>Title</th>
-					<td>${metadata.title!}</td>
-				</tr>
-				<tr>
-					<th>Description</th>
-					<td>${metadata.description!}</td>
-				</tr>
-				<tr>
-					<th>Subject</th>
-					<td>${metadata.subject!}</td>
-				</tr>
-				<tr>
-					<th>HomeUrl</th>
-					<td>${metadata.homeUrl!}</td>
-				</tr>
-				<tr>
-					<th>LogoUrl</th>
-					<td>${metadata.logoUrl!}</td>
-				</tr>
-				<#if metadata.published??>
-					<tr>
-						<th>Published</th>
-						<td>${metadata.published?date?string.medium!}</td>
-					</tr>
-				</#if>
-			</table>
+      <#include "/WEB-INF/pages/inc/metadata.ftl">
 		</div>
 			<#else>
 			<p class="warn">Cant read dataset metadata.</p>

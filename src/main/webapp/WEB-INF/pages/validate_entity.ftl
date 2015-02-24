@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.gbif.dwca.action.ValidateAction" -->
 <#assign ext=(extensions[af.rowType])!"" />
 <#-- EXTENSION -->
 <#if ext!="">

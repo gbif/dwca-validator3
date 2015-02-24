@@ -17,24 +17,22 @@
 package org.gbif.dwca.service;
 
 import org.gbif.dwca.config.AppConfig;
-import org.gbif.metadata.eml.ValidatorFactory;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+
+import com.google.common.base.Throwables;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * @author markus
@@ -42,6 +40,9 @@ import javax.xml.validation.Validator;
  */
 @Singleton
 public class ValidationServiceImpl implements ValidationService {
+  private static final String SCHEMA_LANG = "http://www.w3.org/2001/XMLSchema";
+  private static final Logger LOG = LoggerFactory.getLogger(ValidationServiceImpl.class);
+
   class UpdateValidatorsTask extends TimerTask {
     @Override
     public void run() {
@@ -49,7 +50,6 @@ public class ValidationServiceImpl implements ValidationService {
     }
   }
 
-  private Logger log = LoggerFactory.getLogger(this.getClass());
   private AppConfig cfg;
   private Date lastUpdate;
   private Validator metaValidator;
@@ -111,52 +111,31 @@ public class ValidationServiceImpl implements ValidationService {
   }
 
   private void updateSchemas() {
-    log.info("Updating validation schemas...");
+    LOG.info("Updating validation schemas...");
     lastUpdate = new Date();
 
-    // meta validator
-    String schemaUrl = cfg.getMetaSchema();
     try {
-      // define the type of schema - we use W3C:
-      String schemaLang = "http://www.w3.org/2001/XMLSchema";
-      // get validation driver:
-      SchemaFactory factory = SchemaFactory.newInstance(schemaLang);
-      // create schema by reading it from an URL:
-      log.debug("Loading dwc-a xml schema from " + schemaUrl + " ...");
-      Schema schema = factory.newSchema(new URL(schemaUrl));
-      metaValidator = schema.newValidator();
-      log.debug("Dwc-A descriptor schema validator updated");
-    } catch (MalformedURLException e) {
-      log.error("Cannot load dwc-a xml schema from " + schemaUrl, e);
-    } catch (SAXException e) {
-      log.error("Cannot parse dwc-a xml schema from " + schemaUrl, e);
-    } catch (Exception e) {
-      log.error("Unknown error loading dwc-a xml schema from " + schemaUrl, e);
-    }
+      // meta validator
+      metaValidator = getValidator(cfg.getMetaSchema());
 
-    // GBIF Profile
-    try {
-      gbifProfileValidator = ValidatorFactory.getGbifValidator();
-      log.debug("EML GBIF Profile schema updated");
-    } catch (MalformedURLException e) {
-      log.error("Cannot load gbif profile xml schema", e);
-    } catch (SAXException e) {
-      log.error("Cannot parse gbif profile schema", e);
-    } catch (Exception e) {
-      log.error("Unknown error loading gbif profile schema", e);
-    }
+      // GBIF Profile
+      gbifProfileValidator = getValidator(cfg.getGbifSchema());
 
-    // EML Schema
-    try {
-      emlValidator = ValidatorFactory.getEmlValidator();
-      log.debug("EML schema updated");
-    } catch (MalformedURLException e) {
-      log.error("Cannot parse eml schema", e);
-    } catch (SAXException e) {
-      log.error("Cannot parse eml schema", e);
-    } catch (Exception e) {
-      log.error("Unknown error loading eml schema", e);
-    }
+      // EML Schema
+      emlValidator = getValidator(cfg.getEmlSchema());
 
+    } catch (Exception e) {
+      Throwables.propagate(e);
+    }
+  }
+
+  private static Validator getValidator(String url) throws IOException, SAXException {
+    LOG.info("Loading xml schema from {}", url);
+    // define the type of schema - we use W3C:
+    // resolve validation driver:
+    SchemaFactory factory = SchemaFactory.newInstance(SCHEMA_LANG);
+    // create schema by reading it from gbif online resources:
+    Schema schema = factory.newSchema(new StreamSource(url));
+    return schema.newValidator();
   }
 }

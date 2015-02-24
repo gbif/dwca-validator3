@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.gbif.dwca.action.AboutAction" -->
 <#include "/WEB-INF/pages/inc/header.ftl"/>
  <title>The Darwin Core Archive Validator</title>
  <style>
@@ -17,12 +18,12 @@ Due to the simplicity of the archives GBIF encourages publishers to create them 
 Therefore the need arises to provide a testing framework for developers to make sure GBIF and others can read the information as expected.
  </p>
  
- <p>The validator uses the <a href="${schemaMetaUrl}">official XML schema</a> to validate the meta.xml descriptor, 
- but additionally it uses the <a href="http://code.google.com/p/darwincore/wiki/DarwinCoreArchiveReader">Darwin Core Archive Reader</a> java library to validate the content against the known extensions and terms registered within the GBIF network for sharing biodiversity data.
+ <p>The validator uses the <a href="${cfg.metaSchema}">official XML schema</a> to validate the meta.xml descriptor,
+ but additionally it uses the <a href="https://github.com/gbif/dwca-reader">Darwin Core Archive Reader</a> java library to validate the content against the known extensions and terms registered within the GBIF network for sharing biodiversity data.
  GBIF runs a production and a development registry that keeps track of extensions, both of which are used by this validator. 
  You can find more informatin about known extensions <a href="extensions.do">on this site</a> or 
- inspect the source defintions as listed by the GBIF <a ref="${registryUrl}/registry/extensions.json">production</a> 
- or <a ref="${registryDevUrl}/registry/extensions.json">development</a> registry. 
+ inspect the source defintions as listed by the GBIF <a ref="${cfg.prodExtensions}">production</a>
+ or <a ref="${cfg.devExtensions}">development</a> resources.
  </p>
 
 <p>

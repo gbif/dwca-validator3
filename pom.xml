@@ -40,11 +40,11 @@
     <commons-lang.version>3.3.2</commons-lang.version>
     <commons-digester.version>2.1</commons-digester.version>
     <dwc-api.version>1.10</dwc-api.version>
-    <dwca-reader.version>1.21-SNAPSHOT</dwca-reader.version>
+    <dwca-reader.version>1.20</dwca-reader.version>
     <freemarker.version>2.3.21</freemarker.version>
     <gbif-common.version>0.17</gbif-common.version>
     <gbif-httputils.version>0.6</gbif-httputils.version>
-    <gbif-registry.version>2.25-SNAPSHOT</gbif-registry.version>
+    <gbif-registry.version>2.24</gbif-registry.version>
     <guava.version>17.0</guava.version>
     <guice.version>3.0</guice.version>
     <httpclient.version>4.4</httpclient.version>

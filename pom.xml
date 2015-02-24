@@ -21,7 +21,6 @@
     <connection>scm:git:git@github.com:gbif/dwca-validator3.git</connection>
     <url>https://github.com/gbif/dwca-validator3</url>
     <developerConnection>scm:git:git@github.com:gbif/dwca-validator3.git</developerConnection>
-    <tag>dwca-validator-3.1</tag>
   </scm>
 
   <properties>

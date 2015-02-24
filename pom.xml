@@ -65,8 +65,9 @@
     <plugins>
       <!-- To simplify development, allows developers to use "mvn jetty:run" -->
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.2.8.v20150217</version>
         <configuration>
           <stopKey>stop</stopKey>
           <stopPort>9966</stopPort>

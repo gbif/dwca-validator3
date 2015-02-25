@@ -484,6 +484,18 @@ public class ValidateAction extends BaseAction {
     return schemaStackTrace;
   }
 
+  /**
+   * gets the row value or throws informative exception if the index does not exist
+   */
+  private String getRowValue(String[] row, int column, String columnName) {
+    try {
+      return StringUtils.trimToNull(row[column]);
+    } catch (Exception e) {
+      valid=false;
+      throw new IllegalArgumentException("Column "+columnName+" with index "+column+" not existing", e);
+    }
+  }
+
   private void inspectArchiveFile(ArchiveFile af, boolean core) {
     String rowType = af.getRowType();
     String filename = af.getLocation();
@@ -556,13 +568,13 @@ public class ValidateAction extends BaseAction {
           }
         }
         // core id?
-        if (idColumn>=0 && row.length > idColumn){
-          String coreID = StringUtils.trimToNull(row[idColumn]);
+        if (idColumn>=0 && row.length > 0){
+          String coreID = getRowValue(row, idColumn, "id");
           if (core) {
             // if its a taxon, is it a synonym?
             byte synonym = 0;
             if (acceptedUsageIdx > -1){
-              String acceptedID = StringUtils.trimToNull(row[acceptedUsageIdx]);
+              String acceptedID = getRowValue(row, acceptedUsageIdx, DwcTerm.acceptedNameUsageID.simpleName());
               if (acceptedID != null && !acceptedID.equals(coreID)){
                  synonym = 1;
               }
@@ -622,11 +634,11 @@ public class ValidateAction extends BaseAction {
           reader = af.getCSVReader();
           while (reader.hasNext()) {
             String[] row = reader.next();
-            String coreID = StringUtils.trimToNull(row[idColumn]);
+            String coreID = getRowValue(row, idColumn, "id");
             // check foreign key terms
             if (acceptedUsageIdx >= 0 && row.length > acceptedUsageIdx) {
               // it is allowed to concat multiple ids with PIPEs - split them
-              String acceptedIds = StringUtils.trimToNull(row[acceptedUsageIdx]);
+              String acceptedIds = getRowValue(row, acceptedUsageIdx, DwcTerm.acceptedNameUsageID.simpleName());
               if (acceptedIds!=null){
                 for (String accId : StringUtils.split(acceptedIds,'|')){
                   if (missingAcceptedUsageIDs.size() < MAX_RECORDS_REPORTED && !coreIds.containsKey(accId)) {
@@ -639,11 +651,11 @@ public class ValidateAction extends BaseAction {
                 }
               }
             }
-            if (parentUsageIdx >= 0 && row.length > parentUsageIdx) {
-              String parentID = row[parentUsageIdx];
+            if (parentUsageIdx >= 0) {
+              String parentID = getRowValue(row, parentUsageIdx, DwcTerm.parentNameUsageID.simpleName());
               if (!StringUtils.isBlank(parentID)){
                 if (missingParentUsageIDs.size() < MAX_RECORDS_REPORTED && !coreIds.containsKey(parentID)) {
-                  missingParentUsageIDs.add(row[parentUsageIdx]);
+                  missingParentUsageIDs.add(parentID);
                 }
                 // is the referenced parent record a synonym?
                 if (parentSynonyms.size() < MAX_RECORDS_REPORTED && coreIds.containsKey(parentID) && coreIds.get(parentID) != 0){
@@ -651,15 +663,16 @@ public class ValidateAction extends BaseAction {
                 }
               }
             }
-            if (originalNameIdx >= 0 && row.length > originalNameIdx) {
-              if (!StringUtils.isBlank(row[originalNameIdx]) && missingOriginalUsageIDs.size() < MAX_RECORDS_REPORTED && !coreIds.containsKey(row[originalNameIdx])) {
-                missingOriginalUsageIDs.add(row[originalNameIdx]);
+            if (originalNameIdx >= 0) {
+              String originalNameID = getRowValue(row, originalNameIdx, DwcTerm.originalNameUsageID.simpleName());
+              if (!StringUtils.isBlank(originalNameID) && missingOriginalUsageIDs.size() < MAX_RECORDS_REPORTED && !coreIds.containsKey(originalNameID)) {
+                missingOriginalUsageIDs.add(originalNameID);
               }
             }
           }
         }
       }
-    } catch (IOException e1) {
+    } catch (Exception e) {
       valid = false;
 
     } finally {

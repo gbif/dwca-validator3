@@ -10,7 +10,7 @@
 
   <groupId>org.gbif</groupId>
   <artifactId>dwca-validator</artifactId>
-  <version>3.3-SNAPSHOT</version>
+  <version>3.4-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>DwC-A Validator</name>

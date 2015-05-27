@@ -3,13 +3,14 @@
  */
 package org.gbif.dwca.service;
 
+import org.gbif.dwc.terms.Term;
 import org.gbif.dwca.model.Extension;
-
-import com.google.inject.ImplementedBy;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import com.google.inject.ImplementedBy;
 
 /**
  * This interface details ALL methods associated with the DwC extensions.
@@ -28,7 +29,7 @@ public interface ExtensionManager {
    * @param rowType
    * @return extension for that rowtype or null if not installed
    */
-  public Extension get(String rowType);
+  public Extension get(Term rowType);
 
   /**
    * @return the date extensions were last updated from the registry
@@ -57,7 +58,7 @@ public interface ExtensionManager {
    */
   public List<Extension> listCore();
 
-  public Map<String, Extension> map();
+  public Map<Term, Extension> map();
 
   /**
    * List all available extensions matching a registered keyword

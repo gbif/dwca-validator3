@@ -3,8 +3,10 @@
  */
 package org.gbif.dwca.service;
 
+import org.gbif.dwc.terms.DwcTerm;
+import org.gbif.dwc.terms.Term;
+import org.gbif.dwc.terms.TermFactory;
 import org.gbif.dwca.config.AppConfig;
-import org.gbif.dwca.config.Constants;
 import org.gbif.dwca.model.Extension;
 import org.gbif.dwca.model.factory.ExtensionFactory;
 
@@ -49,13 +51,14 @@ public class ExtensionManagerImpl implements ExtensionManager {
 
   protected Logger log = LoggerFactory.getLogger(this.getClass());
   protected AppConfig cfg;
-  private Map<String, Extension> extensionsByRowtype = new HashMap<String, Extension>();
+  private Map<Term, Extension> extensionsByRowtype = new HashMap<Term, Extension>();
   private ExtensionFactory factory;
   private HttpClient httpClient;
+  private TermFactory TF = TermFactory.instance();
   private final String TAXON_KEYWORD = "dwc:taxon";
   private final String OCCURRENCE_KEYWORD = "dwc:occurrence";
-  private final String OCCURRENCE_DWC = "http://rs.tdwg.org/dwc/terms/Occurrence";
-  private final String SIMPLE_DWC = "http://rs.tdwg.org/dwc/xsd/simpledarwincore/SimpleDarwinRecord";
+  private final Term OCCURRENCE_DWC = DwcTerm.Occurrence;
+  private final Term SIMPLE_DWC = TF.findTerm("http://rs.tdwg.org/dwc/xsd/simpledarwincore/SimpleDarwinRecord");
   private Date registryUpdate;
   private ObjectMapper mapper = new ObjectMapper();
 
@@ -104,13 +107,15 @@ public class ExtensionManagerImpl implements ExtensionManager {
     return extensions;
   }
 
-  public Extension get(String rowType) {
+  @Override
+  public Extension get(Term rowType) {
     if (SIMPLE_DWC.equals(rowType)) {
       rowType = OCCURRENCE_DWC;
     }
     return extensionsByRowtype.get(rowType);
   }
 
+  @Override
   public Date getRegistryUpdate() {
     return registryUpdate;
   }
@@ -146,27 +151,30 @@ public class ExtensionManagerImpl implements ExtensionManager {
     }
   }
 
+  @Override
   public List<Extension> list() {
     return new ArrayList<Extension>(extensionsByRowtype.values());
   }
 
+  @Override
   public List<Extension> list(Extension core) {
-    if (core != null && core.getRowType().equalsIgnoreCase(Constants.DWC_ROWTYPE_OCCURRENCE)) {
+    if (core != null && core.getRowType() == DwcTerm.Occurrence) {
       return search(OCCURRENCE_KEYWORD);
-    } else if (core != null && core.getRowType().equalsIgnoreCase(Constants.DWC_ROWTYPE_TAXON)) {
+    } else if (core != null && core.getRowType() == DwcTerm.Taxon) {
       return search(TAXON_KEYWORD);
     } else {
       return list();
     }
   }
 
+  @Override
   public List<Extension> listCore() {
     List<Extension> list = new ArrayList<Extension>();
-    Extension e = get(Constants.DWC_ROWTYPE_OCCURRENCE);
+    Extension e = get(DwcTerm.Occurrence);
     if (e != null) {
       list.add(e);
     }
-    e = get(Constants.DWC_ROWTYPE_TAXON);
+    e = get(DwcTerm.Taxon);
     if (e != null) {
       list.add(e);
     }
@@ -177,10 +185,12 @@ public class ExtensionManagerImpl implements ExtensionManager {
    * (non-Javadoc)
    * @see org.gbif.dwca.service.ExtensionManager#map()
    */
-  public Map<String, Extension> map() {
+  @Override
+  public Map<Term, Extension> map() {
     return extensionsByRowtype;
   }
 
+  @Override
   public List<Extension> search(String keyword) {
     List<Extension> list = new ArrayList<Extension>();
     keyword = keyword.toLowerCase();
@@ -192,6 +202,7 @@ public class ExtensionManagerImpl implements ExtensionManager {
     return list;
   }
 
+  @Override
   public int updateFromRegistry() {
     int counter = 0;
     registryUpdate = new Date();

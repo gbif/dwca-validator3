@@ -63,7 +63,7 @@ public class AppConfig {
     return properties.getProperty("version");
   }
 
-  protected void loadConfig() {
+  public void loadConfig() {
     try {
       InputStream configStream = AppConfig.class.getClassLoader().getResourceAsStream(CLASSPATH_PROPFILE);
       this.properties = new Properties();

@@ -3,12 +3,11 @@
  */
 package org.gbif.dwca.action;
 
+import org.gbif.dwc.terms.TermFactory;
 import org.gbif.dwca.model.Extension;
 import org.gbif.dwca.model.Vocabulary;
 import org.gbif.dwca.service.ExtensionManager;
 import org.gbif.dwca.service.VocabulariesManager;
-
-import com.google.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,10 +15,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.google.inject.Inject;
+
 /**
  * The Action responsible for all user input relating to the DarwinCore extension management.
- * 
- * @author tim
  */
 public class ExtensionsAction extends BaseAction {
   @Inject
@@ -35,12 +34,18 @@ public class ExtensionsAction extends BaseAction {
   @Override
   public String execute() {
     if (id != null) {
-      extension = extensionManager.get(id);
+      extension = extensionManager.get(TermFactory.instance().findTerm(id));
       if (extension != null) {
         return SUCCESS;
       }
     }
     return NOT_FOUND;
+  }
+
+  public String reload() {
+    LOG.info("Force extension reload ...");
+    extensionManager.getRegistryUpdate();
+    return list();
   }
 
   public int getCount() {

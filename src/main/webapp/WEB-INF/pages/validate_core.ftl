@@ -89,7 +89,7 @@ ${el}
 	</#list>
 
 <h2>Archive Data Files</h2>
-<p>Inspecting the archive using the dwca-reader library.
+<p>Inspecting the archive using the <a href="https://github.com/gbif/dwca-io">dwca-io library</a>.
 	The archive contains <#if archive.core?exists>a<#else>no</#if> core and ${archive.extensions?size} extension(s).
 </p>
 
@@ -241,27 +241,29 @@ ${el}
 
 	<#if records?exists && (records?size>0)>
 	<h2>Scan Records</h2>
-	<p>Reading the first ${scanSize} records from the archive using the dwca-reader library:</p>
+	<p>Reading the first ${scanSize} records from the archive using the dwca-io library:</p>
 
 	<table class="dwc">
 		<#list extensionOrder as rowType>
 			<tr class="concept">
 				<th>${rowType}</th>
-				<#list recordsHeader[rowType] as ct>
+				<#list action.getRowHeader(rowType) as ct>
 					<th>${ct!}</th></#list>
 			</tr>
 		</#list>
 		<#list records as star>
 			<#list star as rec>
 				<#if rec_index==0>
-				<tr class="core">
+         <tr class="core">
 					<#else>
-					<tr>
+			 	 <tr>
 				</#if>
-				<#list rec as col><#if col_index==0>
-					<th>${col!""}</th><#else>
+				<#list rec as col>
+          <#if col_index==0>
+					  <th>${col!""}</th>
+          <#else>
 						<td>${col!"NULL"}</td></#if></#list>
-			</tr>
+			   </tr>
 			</#list>
 		</#list>
 	</table>

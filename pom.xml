@@ -39,8 +39,8 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>3.3.2</commons-lang.version>
     <commons-digester.version>2.1</commons-digester.version>
-    <dwc-api.version>1.10</dwc-api.version>
-    <dwca-reader.version>1.20</dwca-reader.version>
+    <dwc-api.version>1.12</dwc-api.version>
+    <dwca-io.version>1.22</dwca-io.version>
     <freemarker.version>2.3.21</freemarker.version>
     <gbif-common.version>0.17</gbif-common.version>
     <gbif-httputils.version>0.6</gbif-httputils.version>
@@ -149,8 +149,8 @@
     </dependency>
     <dependency>
       <groupId>org.gbif</groupId>
-      <artifactId>dwca-reader</artifactId>
-      <version>${dwca-reader.version}</version>
+      <artifactId>dwca-io</artifactId>
+      <version>${dwca-io.version}</version>
     </dependency>
 
     <dependency>
@@ -178,6 +178,12 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>runtime</scope>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>test</scope>
       <version>${logback.version}</version>
     </dependency>
     <dependency>

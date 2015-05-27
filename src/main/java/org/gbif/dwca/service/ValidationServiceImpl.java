@@ -61,8 +61,8 @@ public class ValidationServiceImpl implements ValidationService {
   public ValidationServiceImpl(AppConfig cfg) {
     super();
     this.cfg = cfg;
-    // scheduled for every 12 hours
-    this.timer.scheduleAtFixedRate(new UpdateValidatorsTask(), new Date(), 12 * 60 * 60 * 1000);
+    // scheduled for every 24 hours
+    this.timer.scheduleAtFixedRate(new UpdateValidatorsTask(), new Date(), 24 * 60 * 60 * 1000);
   }
 
   /*

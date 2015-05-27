@@ -17,28 +17,28 @@
 package org.gbif.dwca.action;
 
 import org.gbif.api.model.registry.Dataset;
-import org.gbif.dwc.record.Record;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.dwc.terms.Term;
-import org.gbif.dwc.text.Archive;
-import org.gbif.dwc.text.ArchiveFactory;
-import org.gbif.dwc.text.ArchiveField;
-import org.gbif.dwc.text.ArchiveFile;
-import org.gbif.dwc.text.StarRecord;
+import org.gbif.dwc.terms.TermComparator;
+import org.gbif.dwca.io.Archive;
+import org.gbif.dwca.io.ArchiveFactory;
+import org.gbif.dwca.io.ArchiveField;
+import org.gbif.dwca.io.ArchiveFile;
 import org.gbif.dwca.model.Extension;
 import org.gbif.dwca.model.ExtensionProperty;
+import org.gbif.dwca.record.Record;
+import org.gbif.dwca.record.StarRecord;
 import org.gbif.dwca.service.ExtensionManager;
 import org.gbif.dwca.service.ValidationService;
 import org.gbif.dwca.utils.FreemarkerUtils;
 import org.gbif.dwca.utils.UrlUtils;
-import org.gbif.file.CSVReader;
+import org.gbif.io.CSVReader;
 import org.gbif.registry.metadata.parse.DatasetParser;
 import org.gbif.utils.HttpUtil;
 import org.gbif.utils.collection.CompactHashSet;
 import org.gbif.utils.file.ClosableIterator;
 import org.gbif.utils.file.CompressionUtil;
 import org.gbif.utils.file.CompressionUtil.UnsupportedCompressionType;
-import org.gbif.utils.file.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +46,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
@@ -62,11 +61,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.regex.Pattern;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
@@ -94,7 +93,7 @@ public class ValidateAction extends BaseAction {
   private File file;
   private String fileContentType;
   private String fileFileName;
-  private String meta;
+  private String eml;
   private String archiveUrl;
   private String ifModifiedSince;
   private Date ifModifiedSinceDate;
@@ -128,10 +127,10 @@ public class ValidateAction extends BaseAction {
   private Exception dwcaException;
   private List<StackTraceElement> dwcaStackTrace = new ArrayList<StackTraceElement>();
   private Archive archive;
-  private Map<String, Extension> extensions;
-  private Map<String, List<ArchiveField>> fields = new HashMap<String, List<ArchiveField>>();
-  private Map<String, List<ExtensionProperty>> fieldsMissing = new HashMap<String, List<ExtensionProperty>>();
-  private Map<String, List<ArchiveField>> fieldsUnknown = new HashMap<String, List<ArchiveField>>();
+  private Map<Term, Extension> extensions;
+  private Map<Term, List<ArchiveField>> fields = new HashMap<Term, List<ArchiveField>>();
+  private Map<Term, List<ExtensionProperty>> fieldsMissing = new HashMap<Term, List<ExtensionProperty>>();
+  private Map<Term, List<ArchiveField>> fieldsUnknown = new HashMap<Term, List<ArchiveField>>();
   // as found in dwca folder
   private Set<String> dwcaFiles = new HashSet<String>(); // all files in dwca but meta.xml and the metadata one
   private String coreFile;
@@ -161,8 +160,8 @@ public class ValidateAction extends BaseAction {
   // records
   private int scanSize = 100;
   private List<List<List<String>>> records = new ArrayList<List<List<String>>>();
-  private List<String> extensionOrder = new ArrayList<String>();
-  private Map<String, List<String>> recordsHeader = new TreeMap<String, List<String>>();
+  private List<Term> extensionOrder;
+  private Map<Term, List<Term>> rowHeader = new HashMap<Term, List<Term>>();
   private Exception recordsException;
   private ArrayList<StackTraceElement> recordsStackTrace = new ArrayList<StackTraceElement>();
   private StatusLine status;
@@ -190,7 +189,7 @@ public class ValidateAction extends BaseAction {
   }
 
   public String eml() throws Exception {
-    if (file != null || meta != null) {
+    if (file != null || eml != null) {
       validateEml();
       return SUCCESS;
     }
@@ -214,8 +213,9 @@ public class ValidateAction extends BaseAction {
     ArchiveLocation archLoc = null;
     if (fileFileName != null) {
       archLoc = openArchive(file, fileFileName);
+      archiveUrl = null;
     } else if (!StringUtils.isBlank(archiveUrl)) {
-      // url to achive provided
+      // url to archive provided
       // extractArchive and validate
       URL url = new URL(UrlUtils.encodeURLWhitespace(archiveUrl.trim()));
       file = File.createTempFile("download-", ".dwca");
@@ -242,14 +242,6 @@ public class ValidateAction extends BaseAction {
         }
         setOffline(reason);
       }
-    } else if (meta != null) {
-      // meta.xml provided as text
-      archLoc = new ArchiveLocation();
-      archLoc.metaFile = File.createTempFile("meta-", ".xml");
-      archLoc.dwcaFolder = archLoc.metaFile;
-      Writer w = FileUtils.startNewUtf8File(archLoc.metaFile);
-      w.write(meta);
-      w.close();
     }
     return archLoc;
   }
@@ -402,34 +394,49 @@ public class ValidateAction extends BaseAction {
       src = new FileInputStream(file);
     } else {
       // copy paste in this.meta
-      src = new StringBufferInputStream(meta);
+      src = new StringBufferInputStream(eml);
     }
     return src;
   }
 
   private Source getEmlSource() throws FileNotFoundException {
-    Source src = new StreamSource(getEmlInputStream());
-    return src;
+    return new StreamSource(getEmlInputStream());
   }
 
-  public List<String> getExtensionOrder() {
+  public List<Term> getExtensionOrder() {
     return extensionOrder;
   }
 
-  public Map<String, Extension> getExtensions() {
+  public Map<Term, Extension> getExtensions() {
     return extensions;
   }
 
-  public Map<String, List<ArchiveField>> getFields() {
+  public Extension getExtension(Term rowType) {
+    return extensions.get(rowType);
+  }
+
+  public Map<Term, List<ArchiveField>> getFields() {
     return fields;
   }
 
-  public Map<String, List<ExtensionProperty>> getFieldsMissing() {
+  public List<ArchiveField> getFields(Term rowType) {
+    return fields.get(rowType);
+  }
+
+  public Map<Term, List<ExtensionProperty>> getFieldsMissing() {
     return fieldsMissing;
   }
 
-  public Map<String, List<ArchiveField>> getFieldsUnknown() {
+  public List<ExtensionProperty> getFieldsMissing(Term rowType) {
+    return fieldsMissing.get(rowType);
+  }
+
+  public Map<Term, List<ArchiveField>> getFieldsUnknown() {
     return fieldsUnknown;
+  }
+
+  public List<ArchiveField> getFieldsUnknown(Term rowType) {
+    return fieldsUnknown.get(rowType);
   }
 
   public String getFileFileName() {
@@ -438,10 +445,6 @@ public class ValidateAction extends BaseAction {
 
   public Date getLastUpdated() {
     return validation.getLastUpdate();
-  }
-
-  public String getMeta() {
-    return meta;
   }
 
   public Dataset getMetadata() {
@@ -464,8 +467,8 @@ public class ValidateAction extends BaseAction {
     return recordsException;
   }
 
-  public Map<String, List<String>> getRecordsHeader() {
-    return recordsHeader;
+  public List<Term> getRowHeader(Term rowType) {
+    return rowHeader.get(rowType);
   }
 
   public ArrayList<StackTraceElement> getRecordsStackTrace() {
@@ -497,7 +500,7 @@ public class ValidateAction extends BaseAction {
   }
 
   private void inspectArchiveFile(ArchiveFile af, boolean core) {
-    String rowType = af.getRowType();
+    Term rowType = af.getRowType();
     String filename = af.getLocation();
     // in case the archive is only a file, this will be null, so we need to use the archive folder name instead!
     if(filename==null){
@@ -724,8 +727,7 @@ public class ValidateAction extends BaseAction {
     if (isCore) {
       row.add(rec.id());
     } else {
-      String name = StringUtils.substringAfterLast(rec.rowType(), "/");
-      row.add(name);
+      row.add(rec.rowType().simpleName());
     }
     for (Term t : concepts) {
       row.add(rec.value(t));
@@ -777,8 +779,8 @@ public class ValidateAction extends BaseAction {
     this.fileFileName = fileFileName;
   }
 
-  public void setMeta(String meta) {
-    this.meta = meta;
+  public void setEml(String emlXml) {
+    this.eml = emlXml;
   }
 
   public String getArchiveUrl() {
@@ -803,22 +805,18 @@ public class ValidateAction extends BaseAction {
   private void setRecords() {
     try {
       // prepare ordered headers
-      Map<String, List<Term>> recordsHeaderFull = new HashMap<String, List<Term>>();
-      List<Term> terms = new ArrayList<Term>();
-      recordsHeaderFull.put(archive.getCore().getRowType(), terms);
-      for (Term t : archive.getCore().getFields().keySet()) {
-        terms.add(t);
-      }
-      int maxRecordWidth = terms.size();
       for (ArchiveFile af : archive.getExtensions()) {
-        terms = new ArrayList<Term>();
-        recordsHeaderFull.put(af.getRowType(), terms);
-        for (Term t : af.getFields().keySet()) {
-          terms.add(t);
-        }
-        if (terms.size() > maxRecordWidth) {
-          maxRecordWidth = terms.size();
-        }
+        rowHeader.put(af.getRowType(), Lists.newArrayList(af.getFields().keySet()));
+      }
+      extensionOrder = new ArrayList<Term>(rowHeader.keySet());
+      Collections.sort(extensionOrder, new TermComparator());
+      // now add core
+      extensionOrder.add(0, archive.getCore().getRowType());
+      rowHeader.put(archive.getCore().getRowType(), Lists.newArrayList(archive.getCore().getFields().keySet()));
+
+      int maxRecordWidth = 0;
+      for (Term rt : rowHeader.keySet()) {
+        maxRecordWidth = rowHeader.get(rt).size() > maxRecordWidth ? rowHeader.get(rt).size() : maxRecordWidth;
       }
       // finally loop thru data
       ClosableIterator<StarRecord> iter = archive.iterator();
@@ -828,33 +826,12 @@ public class ValidateAction extends BaseAction {
         List<List<String>> interpretedRecord = new ArrayList<List<String>>();
         records.add(interpretedRecord);
         // first the core
-        interpretedRecord.add(interpretRecord(recordsHeaderFull.get(rec.core().rowType()), rec.core(), true,
-            maxRecordWidth + 1));
+        interpretedRecord.add(interpretRecord(rowHeader.get(rec.core().rowType()), rec.core(), true, maxRecordWidth + 1));
         for (Record r : rec) {
-          interpretedRecord.add(interpretRecord(recordsHeaderFull.get(r.rowType()), r, false, maxRecordWidth));
+          interpretedRecord.add(interpretRecord(rowHeader.get(r.rowType()), r, false, maxRecordWidth));
         }
         i++;
       }
-      // finally use only simple extension names for headers:
-      String coreName = StringUtils.substringAfterLast(archive.getCore().getRowType(), "/");
-      recordsHeader.put(coreName, null);
-      List<String> extensionNames = new ArrayList<String>();
-      for (String rt : recordsHeaderFull.keySet()) {
-        String name = StringUtils.substringAfterLast(rt, "/");
-        List<String> concepts = new ArrayList<String>();
-        for (Term ct : recordsHeaderFull.get(rt)) {
-          concepts.add(ct.simpleName());
-        }
-        while (concepts.size() < maxRecordWidth) {
-          concepts.add("");
-        }
-        recordsHeader.put(name, concepts);
-        extensionNames.add(name);
-      }
-      extensionOrder.add(coreName);
-      extensionNames.remove(coreName);
-      Collections.sort(extensionNames);
-      extensionOrder.addAll(extensionNames);
     } catch (Exception e) {
       setRecordsException(e);
     }

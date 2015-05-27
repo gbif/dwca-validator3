@@ -1,6 +1,7 @@
 package org.gbif.dwca.model;
 
 import org.gbif.dwc.terms.Term;
+import org.gbif.dwc.terms.TermFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,7 +25,7 @@ public class Extension implements Comparable<Extension>{
   private String title; // human title
   private String name; // table, file & xml tag naming. no whitespace allowed
   private URL url;
-  private String rowType;
+  private Term rowType;
   private String subject;
   private String description;
   private String namespace;
@@ -50,7 +51,10 @@ public class Extension implements Comparable<Extension>{
    * @see java.lang.Comparable#compareTo(Object)
    */
   public int compareTo(Extension object) {
-    return new CompareToBuilder().append(this.rowType, object.rowType).append(this.url.toString(), object.url.toString()).toComparison();
+    return new CompareToBuilder()
+      .append(this.rowType.qualifiedName(), object.rowType.qualifiedName())
+      .append(this.url.toString(), object.url.toString())
+      .toComparison();
   }
 
   /**
@@ -108,7 +112,7 @@ public class Extension implements Comparable<Extension>{
     return null;
   }
 
-  public String getRowType() {
+  public Term getRowType() {
     return rowType;
   }
 
@@ -194,6 +198,10 @@ public class Extension implements Comparable<Extension>{
   }
 
   public void setRowType(String rowType) {
+    setRowType(TermFactory.instance().findTerm(rowType));
+  }
+
+  public void setRowType(Term rowType) {
     this.rowType = rowType;
   }
 

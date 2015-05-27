@@ -1,14 +1,14 @@
 <#-- @ftlvariable name="" type="org.gbif.dwca.action.ValidateAction" -->
-<#assign ext=(extensions[af.rowType])!"" />
+<#assign ext=(extensions.get(af.rowType)) />
 <#-- EXTENSION -->
-<#if ext!="">
-<h3>${ext.title} <span class="small"><a href="extension.do?id=${af.rowType}" target="_blank">${af.rowType}</a></span></h3>
-<#if ext.dev>
-<p><img src="images/warning.gif"/> <em>Extension is still under development</em></p>
-</#if>
+<#if ext??>
+  <h3>${ext.title} <span class="small"><a href="extension.do?id=${af.rowType}" target="_blank">${af.rowType}</a></span></h3>
+  <#if ext.dev>
+  <p><img src="images/warning.gif"/> <em>Extension is still under development</em></p>
+  </#if>
 <#else>
-<h3>Entity <span class="small">${af.rowType}</span></h3>
-<p class="warn">The extension of row type <em>${af.rowType}</em> is unknown to GBIF.</p>
+  <h3>Entity <span class="small">${af.rowType}</span></h3>
+  <p class="warn">The extension of row type <em>${af.rowType}</em> is unknown to GBIF.</p>
 </#if>
 
 <#-- SOURCE DATA FILES -->
@@ -40,7 +40,7 @@
 	</#if>
 </li>
 <#-- ok -->
-<#list fields[af.rowType] as f>
+<#list action.getFields(af.rowType) as f>
 <li><pre>${f.term.qualifiedName()}</pre> mapped to
 	<#if f.index?exists>column ${f.index}<#if f.defaultValue?exists> with default value &quot;${f.defaultValue}&quot;</#if>
 	<#else><#if f.defaultValue?exists>constant value &quot;${f.defaultValue}&quot; <#else><span class="warn">nothing</span></#if>
@@ -48,7 +48,7 @@
 </li>
 </#list>
 <#-- unknown -->
-<#list fieldsUnknown[af.rowType] as f>
+<#list action.getFieldsUnknown(af.rowType) as f>
 <li><span class="warn">Unknown term</span> <pre>${f.term.qualifiedName()}</pre> mapped to
 	<#if f.index?exists>column ${f.index}<#if f.defaultValue?exists> with default value &quot;${f.defaultValue}&quot;</#if>
 	<#else><#if f.defaultValue?exists>constant value &quot;${f.defaultValue}&quot; <#else><span class="warn">nothing</span></#if>
@@ -56,7 +56,7 @@
 </li>
 </#list>
 <#-- missing -->
-<#list fieldsMissing[af.rowType] as f>
+<#list action.getFieldsMissing(af.rowType) as f>
 <li><span class="warn">Missing required term</span> <pre>${f.qualname}</pre></li>
 </#list>
 </ul>

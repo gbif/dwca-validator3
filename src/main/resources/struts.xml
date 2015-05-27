@@ -72,6 +72,9 @@
 		</action>
 
 		<!-- EXTENSION & VOCAB MANAGEMENT -->
+    <action name="reload" class="org.gbif.dwca.action.ExtensionsAction" method="reload">
+      <result>/WEB-INF/pages/extensions.ftl</result>
+    </action>
 		<action name="extensions" class="org.gbif.dwca.action.ExtensionsAction" method="list">
 			<result>/WEB-INF/pages/extensions.ftl</result>
 		</action>

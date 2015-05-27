@@ -234,7 +234,7 @@ div.definition div.body > div{
     padding-bottom: 10px;
 }
 
-// div.definition only ???
+
 div.details{
     padding-bottom: 0px;
 }
@@ -268,4 +268,10 @@ table.dwc th.concept{
 }
 table.dwc tr.core{
 	border-top: 1px solid #000;
+}
+
+
+.button-right {
+  float: right;
+  margin-right: 220px;
 }

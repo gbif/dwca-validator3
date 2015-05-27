@@ -1,7 +1,7 @@
 <#-- @ftlvariable name="" type="org.gbif.dwca.action.ValidateAction" -->
-<#assign ext=(extensions.get(af.rowType)) />
+<#assign ext=(extensions.get(af.rowType)!"") />
 <#-- EXTENSION -->
-<#if ext??>
+<#if ext != "">
   <h3>${ext.title} <span class="small"><a href="extension.do?id=${af.rowType}" target="_blank">${af.rowType}</a></span></h3>
   <#if ext.dev>
   <p><img src="images/warning.gif"/> <em>Extension is still under development</em></p>

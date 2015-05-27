@@ -67,6 +67,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.opensymphony.xwork2.Action;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
@@ -87,7 +88,6 @@ import org.apache.struts2.views.freemarker.StrutsBeanWrapper;
 public class ValidateAction extends BaseAction {
   protected static final Pattern NULL_REPL = Pattern.compile("^\\s*(null|\\\\N|\\s)\\s*$", Pattern.CASE_INSENSITIVE);
 
-  private static final String REPORTS_DIR_KEY = "reports.dir";
   private static final String REPORTS_WWW_KEY = "reports.www";
 
   private File file;
@@ -322,22 +322,32 @@ public class ValidateAction extends BaseAction {
       Random rnd = new Random();
       reportId = String.format("%Tj-%d", new Date(), Math.abs(rnd.nextLong()));
     }
-    File report = new File(cfg.getProperty(REPORTS_DIR_KEY), reportId +".html");
+    File report = new File(cfg.getReportsDir(), reportId +".html");
     reportUrl = cfg.getProperty(REPORTS_WWW_KEY)+"/"+ reportId + ".html";
-    log.debug("Writing validation report to " + report.getAbsolutePath());
+    log.info("Writing validation report to " + report.getAbsolutePath());
     try {
       BeansWrapper wrapper = new StrutsBeanWrapper(true);
       wrapper.setExposureLevel(0);
       fm.setObjectWrapper(wrapper);
       FreemarkerUtils.writeUtf8File(fm,report,"/WEB-INF/pages/validate_report.ftl",this);
       } catch (TemplateException e) {
-        log.error("Cannot find template for validation report",e);
+        log.error("Cannot find template for validation report", e);
         return false;
       } catch (IOException e) {
         log.error("Cannot write validation report", e);
         return false;
+      } catch (RuntimeException e) {
+        log.error("Error creating validation file report {}", report.getAbsoluteFile(), e);
+        return false;
       }
     return true;
+  }
+
+  /**
+   *
+   */
+  public Action getAction() {
+    return this;
   }
 
   private ArchiveLocation openArchive(File sourceFile, String originalFileName) throws IOException {

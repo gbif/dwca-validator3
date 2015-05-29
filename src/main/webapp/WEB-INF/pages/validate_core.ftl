@@ -1,7 +1,7 @@
 <#-- @ftlvariable name="" type="org.gbif.dwca.action.ValidateAction" -->
 <h1>DwC Archive Validation Result</h1>
 
-<p><strong>Archive Source</strong>: <#if archiveUrl?has_content>${archiveUrl}<#else><#if fileFileName?has_content>uploaded file ${fileFileName}<#else>meta.xml form</#if></#if></p>
+<p><strong>Archive Source</strong>: <#if fileFileName?has_content>uploaded file ${fileFileName}<#else>${archiveUrl}</#if></p>
 <#if !online>
 <p class="warn">${offlineReason!"Failed to download archive"}</p>
 </#if>

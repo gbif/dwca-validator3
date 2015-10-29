@@ -1,7 +1,16 @@
-dwca-validator3
-===============
+# dwca-validator3
 
-The Darwin Core Validator deployed on http://tools.gbif.org/dwca-validator/.
-(This version was ported from https://code.google.com/p/darwincore/source/browse/tags/dwca-validator-3.0/)
+*Please note that a rewrite of this project has been started on https://github.com/gbif/dwca-validator and any new development should consider careful which codebase to evolve.*
 
-However, please note that a rewrite of this project has been started on https://github.com/gbif/dwca-validator and any new development should consider careful which codebase to evolve.
+The dwca-validator3 project provides:
+ * Current GBIF online [Darwin Core Archive/EML validator](http://tools.gbif.org/dwca-validator/)
+ * The DarwinCore [Registered Extensions page](http://tools.gbif.org/dwca-validator/extensions.do)
+ * Current GBIF API for [Darwin Core Archive validator](http://tools.gbif.org/dwca-validator/api.do)
+
+## To build the project
+```
+mvn clean install
+```
+
+## Note
+This version was ported from https://code.google.com/p/darwincore/source/browse/tags/dwca-validator-3.0/

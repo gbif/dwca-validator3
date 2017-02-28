@@ -1,6 +1,6 @@
 # dwca-validator3
 
-*Please note that a rewrite of this project has been started on https://github.com/gbif/dwca-validator and any new development should consider careful which codebase to evolve.*
+*Please note that a rewrite of this project has been started on https://github.com/gbif/gbif-data-validator and any new development should consider careful which codebase to evolve.*
 
 The dwca-validator3 project provides:
  * Current GBIF online [Darwin Core Archive/EML validator](http://tools.gbif.org/dwca-validator/)

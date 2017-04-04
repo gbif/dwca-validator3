@@ -6,7 +6,7 @@
 
 <div>
 	<h1>DwCA Validator API</h1>
-	<h4>http://tools.gbif.org/dwca-validator/validatews.do</h4>
+	<h4>https://tools.gbif.org/dwca-validator/validatews.do</h4>
     <div class="boxed">
 		<p>
 		The validator can also be used as a json webservice to validate online archives and will return some basic validation information along with a link to the saved regular html report that is stored for one month.
@@ -30,7 +30,7 @@
 		<h2>JSON Response</h2>
 		<p>
 		Example of a successful validation response with request =
-			http://tools.gbif.org/dwca-validator/validatews.do?archiveUrl=http://rs.gbif.org/datasets/vernaculars/vernacular_registry_dwca_3.zip
+			https://tools.gbif.org/dwca-validator/validatews.do?archiveUrl=http://rs.gbif.org/datasets/vernaculars/vernacular_registry_dwca_3.zip
 		</p>
 <pre>
 {
@@ -40,7 +40,7 @@
   "valid": true,
   "metadata": true,
   "reportId": "210-308359173575056734",
-  "report": "http://tools.gbif.org/dwca-reports/210-308359173575056734.html",
+  "report": "https://tools.gbif.org/dwca-reports/210-308359173575056734.html",
   "fileRecords": {
       "vernaculars.txt": 1315,
       "Taxa.txt": 1306
@@ -51,7 +51,7 @@
 
 			<p>
 			Example of a not modified validation response with request =
-				http://tools.gbif.org/dwca-validator/validatews.do?archiveUrl=http://rs.gbif.org/datasets/vernaculars/vernacular_registry_dwca_3.zip&ifModifiedSince=2011-06-27
+				https://tools.gbif.org/dwca-validator/validatews.do?archiveUrl=http://rs.gbif.org/datasets/vernaculars/vernacular_registry_dwca_3.zip&ifModifiedSince=2011-06-27
 			</p>
 <pre>
 {

@@ -305,7 +305,7 @@
         <devMode>false</devMode>
         <devModeNegated>true</devModeNegated>
         <reports.dir>/var/www/html/tools/dwca-reports</reports.dir>
-        <reports.www>http://tools.gbif.org/dwca-reports</reports.www>
+        <reports.www>https://tools.gbif.org/dwca-reports</reports.www>
       </properties>
     </profile>
   </profiles>

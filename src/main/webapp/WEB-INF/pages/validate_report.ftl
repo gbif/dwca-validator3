@@ -5,7 +5,7 @@
 	<meta name="copyright" lang="en" content="GBIF"/>
 	<meta name="author" content="dwca-validator ${cfg.version!"???"}"/>
 	<meta name="keywords" content="valid=${(valid!false)?string},online=${(online!false)?string},metadata=${(metadata?exists)?string}"/>
-	<base href="http://tools.gbif.org/dwca-validator/"/>
+	<base href="https://tools.gbif.org/dwca-validator/"/>
 	<link rel="stylesheet" type="text/css" href="styles/style.css"/>
 	<title>DwC-A Validation Result</title>
 <style>

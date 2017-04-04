@@ -9,10 +9,10 @@
 <pre>
       [@s.property value="%{exception.message}"/]
 </pre>
-    
+
 <p>
-If you think this shouldnt have happened, would you mind helping us to improve the validator and 
-<a href="http://code.google.com/p/darwincore/issues/entry?summary=DwCA-validator%20error">file a small bug report</a> for this exception? 
+If you think this shouldn't have happened, would you mind helping us to improve the validator and
+<a href="https://github.com/gbif/dwca-validator3/issues">file a small bug report</a> for this exception?
 Please include the technical details given below.
 </p>
 

@@ -16,6 +16,21 @@
 
 package org.gbif.dwca.action;
 
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.opensymphony.xwork2.Action;
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
+import gnu.trove.map.TObjectByteMap;
+import gnu.trove.map.hash.TObjectByteHashMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
+import org.apache.commons.io.filefilter.HiddenFileFilter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.struts2.views.freemarker.StrutsBeanWrapper;
 import org.gbif.api.model.registry.Dataset;
 import org.gbif.dwc.terms.DwcTerm;
 import org.gbif.dwc.terms.Term;
@@ -32,54 +47,23 @@ import org.gbif.dwca.service.ExtensionManager;
 import org.gbif.dwca.service.ValidationService;
 import org.gbif.dwca.utils.FreemarkerUtils;
 import org.gbif.dwca.utils.UrlUtils;
-import org.gbif.io.CSVReader;
 import org.gbif.registry.metadata.parse.DatasetParser;
 import org.gbif.utils.HttpUtil;
 import org.gbif.utils.collection.CompactHashSet;
 import org.gbif.utils.file.ClosableIterator;
 import org.gbif.utils.file.CompressionUtil;
 import org.gbif.utils.file.CompressionUtil.UnsupportedCompressionType;
+import org.gbif.utils.file.csv.CSVReader;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-
-import com.google.common.collect.Lists;
-import com.google.inject.Inject;
-import com.opensymphony.xwork2.Action;
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
-import gnu.trove.map.TObjectByteMap;
-import gnu.trove.map.hash.TObjectByteHashMap;
-import gnu.trove.map.hash.TObjectLongHashMap;
-import org.apache.commons.io.filefilter.HiddenFileFilter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.struts2.views.freemarker.StrutsBeanWrapper;
 
 /**
  * @author markus

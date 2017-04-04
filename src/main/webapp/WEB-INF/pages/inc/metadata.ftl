@@ -11,7 +11,7 @@
     <tr><th>Homepage</th><td>${metadata.homepage!}</td></tr>
     <tr><th>LogoUrl</th><td>${metadata.logoUrl!}</td></tr>
     <tr><th>Rights</th><td>${metadata.rights!}</td></tr>
-    <tr><th>Publication Date</th><td>${(metadata.pubDate?date)!}</td></tr>
+    <tr><th>Publication Date</th><td><#if metadata.pubDate??>${metadata.pubDate?date}</#if></td></tr>
 <#list metadata.contacts as c>
     <tr><th>Contact ${c.type!}</th><td>${c.firstName!} ${c.lastName!} ${c.organization!}; <@cat c.address/> ${c.postalCode!} ${c.city!} ${c.country!}; <@cat c.email/> <@cat c.phone/></td></tr>
 </#list>

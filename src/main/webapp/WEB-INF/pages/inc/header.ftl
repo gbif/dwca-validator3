@@ -4,11 +4,11 @@
     <head>
 	    <meta name="copyright" lang="en" content="GBIF" />
  		<link rel="stylesheet" type="text/css" href="styles/style.css"/>
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>	
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 		<script type="text/javascript" src="js/global.js"></script>
- 		
+
 [#-- GOOGLE ANALYTICS - asynchroneous: http://code.google.com/apis/analytics/docs/tracking/asyncTracking.html --]
-[#if (cfg.analyticsKey!"")?length>1] 
+[#if (cfg.analyticsKey!"")?length>1]
 <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', '${cfg.analyticsKey}']);

@@ -36,8 +36,8 @@ public class AppConfig {
     return base;
   }
 
-  public String getMetaSchema() {
-    return getProperty("schema.meta");
+  public String[] getMetaSchemas() {
+    return getProperty("schema.meta").split(",");
   }
 
   public String getEmlSchema() {

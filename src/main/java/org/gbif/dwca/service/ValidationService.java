@@ -18,6 +18,7 @@ package org.gbif.dwca.service;
 
 import com.google.inject.ImplementedBy;
 
+import java.util.Collection;
 import java.util.Date;
 
 import javax.xml.validation.Validator;
@@ -28,14 +29,14 @@ import javax.xml.validation.Validator;
  */
 @ImplementedBy(ValidationServiceImpl.class)
 public interface ValidationService {
-  public Validator getEmlValidator();
+  Validator getEmlValidator();
 
-  public Validator getGbifProfileValidator();
+  Validator getGbifProfileValidator();
 
   /**
    * @return the date the validator schemas were loaded
    */
-  public Date getLastUpdate();
+  Date getLastUpdate();
 
-  public Validator getMetaValidator();
+  Collection<Validator> getMetaValidator();
 }

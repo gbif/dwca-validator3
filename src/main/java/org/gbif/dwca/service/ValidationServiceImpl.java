@@ -19,9 +19,12 @@ package org.gbif.dwca.service;
 import org.gbif.dwca.config.AppConfig;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -33,6 +36,7 @@ import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * @author markus
@@ -52,7 +56,7 @@ public class ValidationServiceImpl implements ValidationService {
 
   private AppConfig cfg;
   private Date lastUpdate;
-  private Validator metaValidator;
+  private Collection<Validator> metaValidator;
   private Validator emlValidator;
   private Validator gbifProfileValidator;
   private final Timer timer = new Timer();
@@ -103,7 +107,7 @@ public class ValidationServiceImpl implements ValidationService {
    * @see org.gbif.dwca.service.ValidationService#getMetaValidator()
    */
   @Override
-  public Validator getMetaValidator() {
+  public Collection<Validator> getMetaValidator() {
     if (metaValidator == null) {
       updateSchemas();
     }
@@ -116,7 +120,13 @@ public class ValidationServiceImpl implements ValidationService {
 
     try {
       // meta validator
-      metaValidator = getValidator(cfg.getMetaSchema());
+      metaValidator = Arrays.stream(cfg.getMetaSchemas()).map(schema -> {
+                          try {
+                            return getValidator(schema);
+                          } catch (SAXException e){
+                            throw Throwables.propagate(e);
+                          }
+                        }).collect(Collectors.toList());
 
       // GBIF Profile
       gbifProfileValidator = getValidator(cfg.getGbifSchema());
@@ -125,11 +135,11 @@ public class ValidationServiceImpl implements ValidationService {
       emlValidator = getValidator(cfg.getEmlSchema());
 
     } catch (Exception e) {
-      Throwables.propagate(e);
+      throw Throwables.propagate(e);
     }
   }
 
-  private static Validator getValidator(String url) throws IOException, SAXException {
+  private static Validator getValidator(String url) throws SAXException {
     LOG.info("Loading xml schema from {}", url);
     // define the type of schema - we use W3C:
     // resolve validation driver:

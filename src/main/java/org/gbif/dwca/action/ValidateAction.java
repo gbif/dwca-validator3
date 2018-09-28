@@ -57,6 +57,7 @@ import org.gbif.utils.file.csv.CSVReader;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Validator;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.SocketException;
@@ -64,13 +65,15 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author markus
  *
  */
 public class ValidateAction extends BaseAction {
-  protected static final Pattern NULL_REPL = Pattern.compile("^\\s*(null|\\\\N|\\s)\\s*$", Pattern.CASE_INSENSITIVE);
+
+  static final Pattern NULL_REPL = Pattern.compile("^\\s*(null|\\\\N|\\s)\\s*$", Pattern.CASE_INSENSITIVE);
 
   private static final String REPORTS_WWW_KEY = "reports.www";
 
@@ -337,9 +340,8 @@ public class ValidateAction extends BaseAction {
   private ArchiveLocation openArchive(File sourceFile, String originalFileName) throws IOException {
     ArchiveLocation loc = new ArchiveLocation();
     loc.dwcaFolder = createDwcaDirectory();
-    List<File> files;
     try {
-      files = CompressionUtil.decompressFile(loc.dwcaFolder, sourceFile);
+      CompressionUtil.decompressFile(loc.dwcaFolder, sourceFile);
       metaOnly = false;
       loc.metaFile = new File(loc.dwcaFolder, "meta.xml");
     } catch (UnsupportedCompressionType e) {
@@ -374,7 +376,7 @@ public class ValidateAction extends BaseAction {
   }
 
   public String getDwcaSchema() {
-    return cfg.getMetaSchema();
+    return Arrays.stream(cfg.getMetaSchemas()).collect(Collectors.joining());
   }
 
   public List<StackTraceElement> getDwcaStackTrace() {
@@ -449,7 +451,7 @@ public class ValidateAction extends BaseAction {
     return metadataException;
   }
 
-  public ArrayList<StackTraceElement> getMetadataStackTrace() {
+  public List<StackTraceElement> getMetadataStackTrace() {
     return metadataStackTrace;
   }
 
@@ -465,7 +467,7 @@ public class ValidateAction extends BaseAction {
     return rowHeader.get(rowType);
   }
 
-  public ArrayList<StackTraceElement> getRecordsStackTrace() {
+  public List<StackTraceElement> getRecordsStackTrace() {
     return recordsStackTrace;
   }
 
@@ -534,8 +536,8 @@ public class ValidateAction extends BaseAction {
     }
 
     // test data file if not previously done already (same file can be mapped more than once)
-    Map<Integer, String[]> afBrokenLines = new HashMap<Integer, String[]>();
-    Set<String> afMissingIds = new CompactHashSet<String>();
+    Map<Integer, String[]> afBrokenLines = new HashMap<>();
+    Set<String> afMissingIds = new CompactHashSet<>();
 
     try {
       CSVReader reader = af.getCSVReader();
@@ -601,18 +603,18 @@ public class ValidateAction extends BaseAction {
 
       // potential second pass to verify foreign keys in the core
       if (core && !tooManyCoreIds) {
-        Set<String> missingAcceptedUsageIDs = new HashSet<String>();
+        Set<String> missingAcceptedUsageIDs = new HashSet<>();
         this.brokenRefIntegrity.put(DwcTerm.acceptedNameUsageID.simpleName(), missingAcceptedUsageIDs);
 
         int parentUsageIdx = -1;
-        Set<String> missingParentUsageIDs = new HashSet<String>();
+        Set<String> missingParentUsageIDs = new HashSet<>();
         if (af.hasTerm(DwcTerm.parentNameUsageID)) {
           parentUsageIdx = af.getField(DwcTerm.parentNameUsageID).getIndex();
           this.brokenRefIntegrity.put(DwcTerm.parentNameUsageID.simpleName(), missingParentUsageIDs);
         }
 
         int originalNameIdx = -1;
-        Set<String> missingOriginalUsageIDs = new HashSet<String>();
+        Set<String> missingOriginalUsageIDs = new HashSet<>();
         if (af.hasTerm(DwcTerm.originalNameUsageID)) {
           originalNameIdx = af.getField(DwcTerm.originalNameUsageID).getIndex();
           this.brokenRefIntegrity.put(DwcTerm.originalNameUsageID.simpleName(), missingOriginalUsageIDs);
@@ -622,10 +624,10 @@ public class ValidateAction extends BaseAction {
         if (acceptedUsageIdx >= 0 || parentUsageIdx >= 0 || originalNameIdx >= 0){
 
           if (acceptedUsageIdx >= 0){
-            acceptedSynonyms = new CompactHashSet<String>();
+            acceptedSynonyms = new CompactHashSet<>();
           }
           if (parentUsageIdx >= 0){
-            parentSynonyms = new CompactHashSet<String>();
+            parentSynonyms = new CompactHashSet<>();
           }
           reader.close();
           reader = af.getCSVReader();
@@ -717,7 +719,7 @@ public class ValidateAction extends BaseAction {
   }
 
   private List<String> interpretRecord(List<Term> concepts, Record rec, boolean isCore, int rowSize) {
-    List<String> row = new ArrayList<String>();
+    List<String> row = new ArrayList<>();
     if (isCore) {
       row.add(rec.id());
     } else {
@@ -802,7 +804,7 @@ public class ValidateAction extends BaseAction {
       for (ArchiveFile af : archive.getExtensions()) {
         rowHeader.put(af.getRowType(), Lists.newArrayList(af.getFields().keySet()));
       }
-      extensionOrder = new ArrayList<Term>(rowHeader.keySet());
+      extensionOrder = new ArrayList<>(rowHeader.keySet());
       Collections.sort(extensionOrder, new TermComparator());
       // now add core
       extensionOrder.add(0, archive.getCore().getRowType());
@@ -817,7 +819,7 @@ public class ValidateAction extends BaseAction {
       int i = 0;
       while (iter.hasNext() && i < scanSize) {
         StarRecord rec = iter.next();
-        List<List<String>> interpretedRecord = new ArrayList<List<String>>();
+        List<List<String>> interpretedRecord = new ArrayList<>();
         records.add(interpretedRecord);
         // first the core
         interpretedRecord.add(interpretRecord(rowHeader.get(rec.core().rowType()), rec.core(), true, maxRecordWidth + 1));
@@ -845,7 +847,7 @@ public class ValidateAction extends BaseAction {
   private void setSchemaException(Exception e) {
     valid = false;
     schemaException = e;
-    schemaStackTrace = new ArrayList<StackTraceElement>();
+    schemaStackTrace = new ArrayList<>();
     for (StackTraceElement el : e.getStackTrace()) {
       if (el.getClassName().equalsIgnoreCase(this.getClass().getName())) {
         schemaStackTrace.add(el);
@@ -855,6 +857,12 @@ public class ValidateAction extends BaseAction {
     }
   }
 
+  private void clearSchemaException() {
+    valid = true;
+    schemaException = null;
+    schemaStackTrace = null;
+  }
+
   /**
    *
    */
@@ -862,11 +870,15 @@ public class ValidateAction extends BaseAction {
     if (metaFile != null) {
       // perform validation:
       log.info("Validating meta.xml ...");
-      try {
-        validation.getMetaValidator().validate(new StreamSource(metaFile));
-        log.info("XML Schema validation success.");
-      } catch (Exception e) {
-        setSchemaException(e);
+      for(Validator metaValidator : validation.getMetaValidator()) {
+        try {
+          metaValidator.validate(new StreamSource(metaFile));
+          log.info("XML Schema validation success.");
+          clearSchemaException();
+          return;
+        } catch (Exception e) {
+          setSchemaException(e);
+        }
       }
     } else {
       metaExists = false;

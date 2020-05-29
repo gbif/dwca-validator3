@@ -4,7 +4,11 @@
 
 <h1>Darwin Core Archive Validator</h1>
 
-<p>To validate a <a href="https://github.com/tdwg/dwc/blob/dwc_cleanup/guides/text/index.md">Darwin Core Archive</a> file either provide a url to an archive or upload an archive including data files for validation.</p>
+<p>This validator verifies the structural integrity of a <a href="https://github.com/gbif/ipt/wiki/DwCAHowToGuide">Darwin Core Archive</a>. 
+Please also see the nerwer <a href="https://www.gbif.org/tools/data-validator">GBIF data validator</a> which validates the content held within an archive. 
+It is expected in time, that the newer validator will replace this version fully. 
+
+<p>To validate a <a href="https://github.com/gbif/ipt/wiki/DwCAHowToGuide">Darwin Core Archive</a> file either provide a url to an archive or upload an archive including data files for validation.</p>
 <p>Please note that we limit the size of uploaded files to 100MB, so reduce your data files if necessary.
     We will happily pull bigger archives from a url provided.</p>
 

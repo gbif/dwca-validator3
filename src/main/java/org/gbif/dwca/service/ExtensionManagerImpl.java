@@ -91,10 +91,15 @@ public class ExtensionManagerImpl implements ExtensionManager {
       Map<String, Object> registryResponse = mapper.readValue(url, Map.class);
       List<Map<String, Object>> jsonExtensions = (List<Map<String, Object>>) registryResponse.get("extensions");
       for (Map<String, Object> ext : jsonExtensions) {
-        try {
-          extensions.add(new URL((String)ext.get("url")));
-        } catch (Exception e) {
-          log.error("Exception when listing extensions", e);
+        Boolean isLatest = (Boolean)ext.get("isLatest");
+        if (isLatest != null && isLatest) {
+          try {
+            extensions.add(new URL((String)ext.get("url")));
+          } catch (Exception e) {
+            log.error("Exception when listing extensions", e);
+          }
+        } else {
+          log.info("Ignoring obsolete extension "+ext.get("url"));
         }
       }
     log.info("Discovered {} extensions in {}", extensions.size(), development ? "sandbox" : "production");

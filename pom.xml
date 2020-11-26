@@ -27,7 +27,7 @@
   <properties>
     <!--
       Default settings used mainly for development.
-      To build a release please use -P release
+      The release plugin activates the release profile.
     -->
     <devMode>true</devMode>
     <devModeNegated>false</devModeNegated>
@@ -90,6 +90,14 @@
             </file>
           </additionalConfig>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>3.0.0-M1</version>
+          <configuration>
+            <releaseProfiles>release</releaseProfiles>
+          </configuration>
       </plugin>
     </plugins>
 

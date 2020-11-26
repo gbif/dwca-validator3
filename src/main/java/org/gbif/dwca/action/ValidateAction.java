@@ -376,7 +376,7 @@ public class ValidateAction extends BaseAction {
   }
 
   public String getDwcaSchema() {
-    return Arrays.stream(cfg.getMetaSchemas()).collect(Collectors.joining());
+    return cfg.getMetaSchemas()[1];
   }
 
   public List<StackTraceElement> getDwcaStackTrace() {

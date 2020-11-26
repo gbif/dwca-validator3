@@ -22,7 +22,7 @@ ${el}
 
 <h2>Descriptor meta.xml</h2>
 <#if metaExists>
-<p>Validating against the dwc text guidelines <a href="${dwcaSchema}">xml schema</a></p>
+<p>Validating against the Darwin Core Text guidelines <a href="${dwcaSchema}">XML schema</a></p>
 	<#if schemaException?exists>
 	<p class="warn">Validation error</p>
 	<pre>${schemaException}</pre>
@@ -46,7 +46,7 @@ ${el}
 <h2>Metadata</h2>
 <p>An archive should (not required) have a metadata file bundled that informs about the whole dataset.
 	GBIF recommends a <a href="${schemaEmlGbifUrl}">subset of EML</a>, but simple <a
-					href="http://code.google.com/p/darwincore/source/browse/trunk/dwca-reader/src/test/resources/metadata/worms_dc.xml">Dublin
+					href="https://raw.githubusercontent.com/gbif/dwca-io/master/src/test/resources/metadata/worms_dc.xml">Dublin
 		Core</a> is also permitted.
 </p>
 	<#if archive.metadataLocation?exists>

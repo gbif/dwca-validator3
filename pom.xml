@@ -302,7 +302,7 @@
   <profiles>
     <!-- Production settings used for the GBIF installation -->
     <profile>
-      <id>gbif</id>
+      <id>release</id>
       <properties>
         <devMode>false</devMode>
         <devModeNegated>true</devModeNegated>

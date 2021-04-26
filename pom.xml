@@ -36,7 +36,7 @@
     <reports.dir>/tmp/dwcareports</reports.dir>
     <reports.www>http://localhost/dwca-reports</reports.www>
 
-    <commons-io.version>2.5</commons-io.version>
+    <commons-io.version>2.7</commons-io.version>
     <commons-lang.version>3.5</commons-lang.version>
     <commons-digester.version>2.1</commons-digester.version>
     <dwc-api.version>1.17</dwc-api.version>
